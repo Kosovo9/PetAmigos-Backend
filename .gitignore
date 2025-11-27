@@ -1,0 +1,104 @@
+# ==========================================
+# PETAMIGOS WORLD - .gitignore
+# ==========================================
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*.local
+config.env
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+security_audit.log
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Secrets
+secrets/
+*.pem
+*.key
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+
+# System files (Windows)
+NTUSER.DAT*
+ntuser.dat*
+*.regtrans-ms
+*.ini
+AppData/
+Desktop/
+Documents/
+Downloads/
+OneDrive/
+
+# Personal projects (excluir otros proyectos)
+.android/
+.antigravity/
+.codeium/
+.codeverse/
+.config/
+.cursor/
+.docker/
+.gemini/
+.local/
+.marscode/
+.node_repl_history
+.ollama/
+.trae-aicc/
+.trae/
+.trai/
+.windsurf/
+.wslconfig/
+.gitconfig
+.lesshst
+Contacts/
+CrossDevice/
+Favorites/
+Links/
+NEXORA/
+Saved Games/
+Searches/
+WebstormProjects/
+manus-referral-app/
+studio-nexora/
+taskmaster-pro/
+whitepage-pro/
+cd petmatch-ai/
+

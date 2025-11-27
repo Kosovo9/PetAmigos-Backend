@@ -2,6 +2,8 @@ const User = require('../models/User');
 
 const PetProfile = require('../models/PetProfile');
 
+const Walker = require('../models/Walker');
+
 const { logBiometricFailure } = require('../middleware/auditLogger');
 
 
@@ -108,11 +110,29 @@ exports.biometricCheckIn = async (req, res) => {
 
         };
 
+        pet.isCiaVerified = true; // Marcar como verificado C.I.A.
+
         await pet.save();
 
 
 
         // 5. Éxito: Check-in completado
+
+        // Sugerir acuñación de PIT Token si no existe
+
+        const hasPITToken = pet.pitTokenId !== null;
+
+        const pitTokenSuggestion = !hasPITToken ? {
+
+            message: "¡Tu mascota está verificada C.I.A.! Ahora puedes acuñar su PIT Token (Identidad Digital Inmutable).",
+
+            action: "mint_pit_token",
+
+            endpoint: "/api/pit-token/mint"
+
+        } : null;
+
+
 
         res.status(200).json({
 
@@ -126,9 +146,13 @@ exports.biometricCheckIn = async (req, res) => {
 
                 name: pet.name,
 
-                isVerified: true
+                isVerified: true,
 
-            }
+                isCiaVerified: true
+
+            },
+
+            pitTokenSuggestion
 
         });
 

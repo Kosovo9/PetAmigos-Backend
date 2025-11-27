@@ -65,3 +65,4 @@ La aplicación estará en `http://localhost:5173`
 - Configura las variables de entorno antes de ejecutar
 - El proyecto está listo para producción después de configurar las APIs
 
+

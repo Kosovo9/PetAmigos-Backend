@@ -38,11 +38,6 @@ app.use(wafShield);
 
 
 
-mongoose.connect(process.env.MONGO_URI)
-
-  .then(() => console.log('✅ BD Conectada'))
-
-  .catch(err => console.error('❌ Error BD:', err));
 
 
 
@@ -54,6 +49,16 @@ const io = new Server(server, {
 
 
 
+// Geo Socket Service (Pilar 4 - Real-Time 3.0)
+
+const setupGeoSocketService = require('./services/GeoSocketService');
+
+setupGeoSocketService(io);
+
+
+
+// Socket básico para compatibilidad
+
 io.on('connection', (socket) => {
 
   console.log(`🔌 User: ${socket.id}`);
@@ -64,11 +69,79 @@ io.on('connection', (socket) => {
 
 
 
+// MongoDB Connection con optimizaciones de performance
+
+mongoose.connect(process.env.MONGO_URI, {
+
+  maxPoolSize: 10, // Máximo de conexiones simultáneas
+
+  serverSelectionTimeoutMS: 5000, // Timeout de selección de servidor
+
+  socketTimeoutMS: 45000, // Timeout de socket
+
+  bufferCommands: false, // Deshabilitar buffering para mejor performance
+
+  bufferMaxEntries: 0
+
+})
+
+  .then(() => console.log('✅ BD Conectada'))
+
+  .catch(err => console.error('❌ Error BD:', err));
+
+
+
+// Rutas API
+
+// Health check (sin auth para monitoreo)
+
+app.use('/', require('./routes/healthRoutes'));
+
+
+
+// Rutas API
+
 app.use('/api/auth', require('./routes/authRoutes'));
 
 app.use('/api/pay', require('./routes/paymentRoutes'));
 
 app.use('/api/ai', require('./routes/aiRoutes'));
+
+app.use('/api/ai-creative', require('./routes/aiCreativeRoutes'));
+
+app.use('/api/sentry', require('./routes/sentryRoutes'));
+
+app.use('/api/legacy', require('./routes/legacyRoutes'));
+
+app.use('/api/verification', require('./routes/verificationRoutes'));
+
+app.use('/api/chat', require('./routes/chatRoutes'));
+
+app.use('/api/pets', require('./routes/petProfileRoutes'));
+
+app.use('/api/petmatch', require('./routes/petMatchRoutes'));
+
+app.use('/api/pit-token', require('./routes/pitTokenRoutes'));
+
+app.use('/api/fintech', require('./routes/finTechRoutes'));
+
+app.use('/api/qa', require('./routes/qaRoutes'));
+
+app.use('/api/ab-testing', require('./routes/abTestingRoutes'));
+
+app.use('/api/data-exchange', require('./routes/dataExchangeRoutes'));
+
+app.use('/api/insurance', require('./routes/insuranceRoutes'));
+
+app.use('/api/dao', require('./routes/daoRoutes'));
+
+app.use('/api/retention', require('./routes/retentionRoutes'));
+
+app.use('/api/msr', require('./routes/msrRoutes'));
+
+app.use('/api/breeding', require('./routes/breedingRoutes'));
+
+app.use('/api/memory', require('./routes/memoryRoutes'));
 
 
 

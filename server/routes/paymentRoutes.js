@@ -2,15 +2,30 @@ const express = require('express');
 
 const router = express.Router();
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
 const auth = require('../middleware/auth');
+
+const { processLifetimeMembership, handlePaymentWebhook } = require('../controllers/paymentController');
 
 
 
 // 🔒 Rutas protegidas: requieren autenticación
 
+// Endpoint principal para Pasaporte de Longevidad (Cash Harvest 10X)
+
+router.post('/lifetime-membership', auth, processLifetimeMembership);
+
+
+
+// Webhook para confirmaciones de pago (sin auth, verificado por firma)
+
+router.post('/webhook', handlePaymentWebhook);
+
+
+
+// Endpoint legacy de Stripe (mantener compatibilidad)
+
 router.post('/create-checkout-session', auth, async (req, res) => {
+    const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
     try {
 

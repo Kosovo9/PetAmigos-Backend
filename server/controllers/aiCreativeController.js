@@ -32,10 +32,10 @@ exports.generateContent = async (req, res) => {
         if (isPremium && resolution === '4K_MAX') {
             // Opción Premium: Se usa Higgsfield.ai para calidad Nivel Dios
             engineUsed = 'PREMIUM_HIGGSFIELD';
-            generationResult = await callHiggsfieldAPI(prompt, style, resolution);
+            generationResult = await generateWithHiggsfield(prompt, style);
         } else {
             // Opción Base/Gratuita/Límite de No-Miembros (Costo controlado)
-            generationResult = await callGoogleAIAPI(prompt, style, resolution);
+            generationResult = await generateWithGoogleAI(prompt, style);
         }
 
         if (!generationResult) {
@@ -101,7 +101,7 @@ exports.generateCreativeContent = async (req, res) => {
         }
 
         // 5. Registrar uso (para cost management)
-        await logAICost(userId, isPremium ? 'higgsfield' : 'google', contentType);
+        await logAICreation(userId, isPremium ? 'higgsfield' : 'google');
 
         res.status(200).json({
             success: true,

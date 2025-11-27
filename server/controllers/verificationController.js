@@ -66,7 +66,7 @@ exports.biometricCheckIn = async (req, res) => {
 
         const isBiometricValid = biometricData && biometricData.length > 0;
 
-        
+
 
         if (!isBiometricValid) {
 
@@ -250,7 +250,7 @@ exports.acceptLegalClause = async (req, res) => {
 
         const user = await User.findById(userId);
 
-        
+
 
         if (!user) {
 
@@ -294,5 +294,61 @@ exports.acceptLegalClause = async (req, res) => {
 
     }
 
+};
+
+/**
+ * Verificar acceso biométrico
+ * Similar a biometricCheckIn pero para validación de acceso
+ */
+exports.verifyBiometricAccess = async (req, res) => {
+    try {
+        const { userId, petId, biometricType, biometricData } = req.body;
+        const ip = req.ip || 'unknown';
+
+        // 1. Validar usuario
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "Usuario no encontrado." });
+        }
+
+        // 2. Validar mascota
+        const pet = await PetProfile.findOne({ _id: petId, owner: userId });
+        if (!pet) {
+            return res.status(404).json({ error: "Mascota no encontrada o no autorizada." });
+        }
+
+        // 3. Verificar datos biométricos
+        const isBiometricValid = biometricData && biometricData.length > 0;
+
+        if (!isBiometricValid) {
+            logBiometricFailure({
+                ip,
+                userId: user._id.toString(),
+                type: 'ACCESS_VERIFICATION',
+                attempts: 1
+            });
+
+            return res.status(401).json({
+                error: "Verificación biométrica fallida.",
+                code: "BIOMETRIC_FAIL"
+            });
+        }
+
+        // 4. Éxito
+        res.status(200).json({
+            success: true,
+            message: "Acceso biométrico verificado.",
+            verified: true,
+            pet: {
+                id: pet._id,
+                name: pet.name,
+                isCiaVerified: pet.isCiaVerified
+            }
+        });
+
+    } catch (error) {
+        console.error("Error en verifyBiometricAccess:", error);
+        res.status(500).json({ error: "Error interno del servidor." });
+    }
 };
 

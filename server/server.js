@@ -79,9 +79,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
   socketTimeoutMS: 45000, // Timeout de socket
 
-  bufferCommands: false, // Deshabilitar buffering para mejor performance
-
-  bufferMaxEntries: 0
+  bufferCommands: false // Deshabilitar buffering para mejor performance
 
 })
 

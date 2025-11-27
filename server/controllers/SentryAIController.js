@@ -35,9 +35,9 @@ exports.triggerServiceOffer = async (req, res) => {
 
         const pet = await PetProfile.findByIdAndUpdate(
 
-            petId, 
+            petId,
 
-            { 
+            {
 
                 moodScore: currentMoodScore,
 
@@ -163,5 +163,37 @@ exports.updateOwnerAnxiety = async (req, res) => {
 
     }
 
+};
+
+/**
+ * Registrar Mood Score (Endpoint principal)
+ */
+exports.registerMoodScore = async (req, res) => {
+    try {
+        const { petId, moodScore } = req.body;
+
+        const pet = await PetProfile.findByIdAndUpdate(
+            petId,
+            {
+                moodScore: moodScore,
+                lastCheckup: new Date()
+            },
+            { new: true }
+        );
+
+        if (!pet) {
+            return res.status(404).json({ error: "Mascota no encontrada." });
+        }
+
+        res.status(200).json({
+            success: true,
+            moodScore: pet.moodScore,
+            message: "Mood Score registrado correctamente."
+        });
+
+    } catch (error) {
+        console.error("Error en registerMoodScore:", error);
+        res.status(500).json({ error: "Error al registrar mood score." });
+    }
 };
 

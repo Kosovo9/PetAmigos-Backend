@@ -78,7 +78,7 @@ router.post('/chat', auth, async (req, res) => {
 
         console.error("Error en AI chat:", error);
 
-        res.status(500).json({ 
+        res.status(500).json({
 
             error: "Error al procesar solicitud de IA.",
 
@@ -102,7 +102,7 @@ async function callGoogleAI(petName, userMessage) {
 
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY;
 
-    
+
 
     if (!apiKey) {
 
@@ -170,7 +170,7 @@ async function callHiggsfieldAI(petName, userMessage) {
 
     const apiKey = process.env.HIGGSFIELD_API_KEY;
 
-    
+
 
     if (!apiKey) {
 
@@ -244,15 +244,11 @@ async function callHiggsfieldAI(petName, userMessage) {
 
 async function callOpenAI(petName, userMessage) {
 
-    const OpenAI = require('openai');
-
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-    
-
+    // Verificar primero si existe la API key
     if (!process.env.OPENAI_API_KEY) {
 
         // Mock si no hay API key
+        console.log('[OpenAI] API Key no configurada, usando respuesta mock');
 
         return `${petName} dice: ¡Guau! Eso suena genial. 🐾`;
 
@@ -261,6 +257,9 @@ async function callOpenAI(petName, userMessage) {
 
 
     try {
+        const OpenAI = require('openai');
+
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
         const completion = await openai.chat.completions.create({
 

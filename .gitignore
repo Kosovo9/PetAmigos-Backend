@@ -8,11 +8,21 @@
 .env.production
 .env.*.local
 config.env
+!.env.example
 
 # Dependencies
 node_modules/
+jspm_packages/
 package-lock.json
 yarn.lock
+yarn-integrity
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
 # Logs
 logs/
@@ -20,12 +30,32 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
 security_audit.log
+pnpm-debug.log*
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
 # Build outputs
 dist/
 build/
+build/Release
 *.tsbuildinfo
+*.tgz
+out/
+.next/
+.nuxt/
+.vuepress/dist
+.temp/
+.svelte-kit/
+**/.vitepress/dist
+**/.vitepress/cache
+.docusaurus/
 
 # OS files
 .DS_Store
@@ -36,6 +66,7 @@ Thumbs.db
 
 # IDE
 .vscode/
+.vscode-test/
 .idea/
 *.sublime-project
 *.sublime-workspace
@@ -48,10 +79,24 @@ secrets/
 # Cache
 .cache/
 .parcel-cache/
+.npm/
+.eslintcache
+.stylelintcache
+.node_repl_history
+.grunt/
+.fusebox/
+.dynamodb/
+.firebase/
+.tern-port
 
 # Testing
 coverage/
 .nyc_output/
+*.lcov
+lib-cov
+
+# Serverless
+.serverless/
 
 # Temporary files
 *.tmp
@@ -102,3 +147,6 @@ taskmaster-pro/
 whitepage-pro/
 cd petmatch-ai/
 
+# Vite logs
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*

@@ -65,4 +65,8 @@ La aplicación estará en `http://localhost:5173`
 - Configura las variables de entorno antes de ejecutar
 - El proyecto está listo para producción después de configurar las APIs
 
+## 📚 Documentación
 
+- [GO_LIVE.md](./GO_LIVE.md) - Guía completa de despliegue
+- [DEPLOY_INSTRUCTIONS.md](./DEPLOY_INSTRUCTIONS.md) - Instrucciones paso a paso
+- [docs/ESTRATEGIA_7_PILARES.md](./docs/ESTRATEGIA_7_PILARES.md) - Estrategia de negocio completa

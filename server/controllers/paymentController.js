@@ -122,10 +122,10 @@ async function processStripe(amount, currency, paymentMethod) {
                         name: "PetAmigos World - Lifetime Membership",
                         description: "Pasaporte de Longevidad - Acceso de por vida"
                     },
-                    unit_amount: Math.round(amount * 100) // Convertir a centavos
+                    unit_amount: Math.round(amount * 100)
                 },
                 quantity: 1
-            },
+            }],
             mode: 'payment',
             success_url: `${process.env.CLIENT_URL}/success`,
             cancel_url: `${process.env.CLIENT_URL}/cancel`

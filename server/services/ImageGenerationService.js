@@ -41,7 +41,6 @@ class ImageGenerationService {
             };
 
         } catch (error) {
-            console.error('❌ Google AI falló:', error.message);
             throw error;
         }
     }
@@ -81,7 +80,6 @@ class ImageGenerationService {
             };
 
         } catch (error) {
-            console.error('❌ Higgsfield falló:', error.message);
             throw error;
         }
     }
@@ -125,7 +123,6 @@ class ImageGenerationService {
             };
 
         } catch (error) {
-            console.error('❌ Hugging Face falló:', error.message);
             throw error;
         }
     }
@@ -201,27 +198,13 @@ class ImageGenerationService {
                 }
 
                 if (result && result.success) {
-                    console.log(`✅ Generación exitosa con ${engine}`);
-                    return result;
-                }
-
-            } catch (error) {
-                console.log(`⚠️ ${engine} falló: ${error.message}`);
-                lastError = error;
-                continue;
+                    error: 'No se pudo generar la imagen',
+                        details: lastError?.message || 'Unknown error',
+                            suggestion: 'Configura al menos una API key (GOOGLE_AI_API_KEY recomendado)',
+                                engine: 'none',
+                                    isPlaceholder: false
+                };
             }
-        }
-
-        // Si todo falló (incluyendo placeholder), retornar error con info útil
-        return {
-            success: false,
-            error: 'No se pudo generar la imagen',
-            details: lastError?.message || 'Unknown error',
-            suggestion: 'Configura al menos una API key (GOOGLE_AI_API_KEY recomendado)',
-            engine: 'none',
-            isPlaceholder: false
-        };
-    }
 
     // 🎥 GENERAR VIDEO (SOLO PRO) - CON FALLBACK
     static async generateVideo(imageUrl, prompt) {

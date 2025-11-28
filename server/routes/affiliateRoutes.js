@@ -8,20 +8,20 @@ const {
     requestPayout,
     generateQR
 } = require('../controllers/affiliateController');
+const { enable2FA, verify2FA, disable2FA } = require('../controllers/twoFactorController');
 
-// 💎 Crear código de afiliado personalizado
-router.post('/create-code', auth, createAffiliateCode);
-
-// 📊 Dashboard de afiliado
-router.get('/dashboard', auth, getAffiliateDashboard);
-
-// 🎁 Aplicar código promocional
+// Rutas públicas
 router.post('/apply-code', auth, applyPromoCode);
 
-// 💸 Solicitar pago de comisiones
+// Rutas de afiliado (requieren auth)
+router.post('/create-code', auth, createAffiliateCode);
+router.get('/dashboard', auth, getAffiliateDashboard);
 router.post('/request-payout', auth, requestPayout);
-
-// 📱 Generar QR code
 router.get('/qr/:code', generateQR);
+
+// 🔐 Rutas de 2FA
+router.post('/2fa/enable', auth, enable2FA);
+router.post('/2fa/verify', auth, verify2FA);
+router.post('/2fa/disable', auth, disable2FA);
 
 module.exports = router;

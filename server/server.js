@@ -195,6 +195,7 @@ app.use('/api/love-stories', require('./routes/loveStoriesRoutes')); // ❤️ H
 app.use('/api/fly', require('./routes/flyRoutes')); // ✈️ PetMatch Fly Policies
 app.use('/api/digital-twin', require('./routes/digitalTwinRoutes')); // 🧬 Pet Digital Twin
 app.use('/api/admin', require('./routes/adminRoutes')); // 🛡️ Admin Panel (Nivel NASA)
+app.use('/api/affiliates', require('./routes/affiliateRoutes')); // 💼 Affiliate System (Platinum Suite)
 
 
 

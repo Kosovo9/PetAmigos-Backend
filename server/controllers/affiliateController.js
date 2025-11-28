@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const PromoCode = require('../models/PromoCode');
 const QRCode = require('qrcode');
+const { sendSaleNotification, sendTierUpgradeNotification } = require('../services/EmailNotificationService');
 
 // 💎 CREAR CÓDIGO DE AFILIADO PERSONALIZADO
 exports.createAffiliateCode = async (req, res) => {
@@ -55,58 +56,72 @@ exports.createAffiliateCode = async (req, res) => {
     }
 };
 
-// 📊 PANEL DE AFILIADO (DASHBOARD)
+// 📊 PANEL DE AFILIADO (DASHBOARD ROBUSTO)
 exports.getAffiliateDashboard = async (req, res) => {
     try {
         const userId = req.userId;
+        const user = await User.findById(userId);
 
-        // Buscar todos los códigos del afiliado
+        // Si no es afiliado, activarlo (Auto-Join por ahora)
+        if (!user.affiliate.isAffiliate) {
+            user.affiliate.isAffiliate = true;
+            await user.save();
+        }
+
+        // Buscar códigos
         const promoCodes = await PromoCode.find({ affiliateId: userId });
 
-        // Calcular estadísticas
-        let totalUses = 0;
-        let totalRevenue = 0;
-        let totalCommission = 0;
-        let recentSales = [];
+        // Calcular TIER basado en lifetime earnings
+        let currentTier = 'bronze';
+        const earnings = user.affiliate.lifetimeEarnings;
 
-        promoCodes.forEach(promo => {
-            totalUses += promo.currentUses;
-            totalRevenue += promo.totalRevenue;
-            totalCommission += promo.totalRevenue * (promo.affiliateCommission / 100);
+        if (earnings > 10000) currentTier = 'platinum';
+        else if (earnings > 5000) currentTier = 'gold';
+        else if (earnings > 1000) currentTier = 'silver';
 
-            // Últimas 10 ventas
-            promo.usedBy.slice(-10).forEach(sale => {
-                recentSales.push({
-                    date: sale.usedAt,
-                    revenue: sale.revenue,
-                    commission: sale.revenue * (promo.affiliateCommission / 100),
-                    code: promo.code
-                });
-            });
-        });
+        if (user.affiliate.tier !== currentTier) {
+            const oldTier = user.affiliate.tier;
+            user.affiliate.tier = currentTier;
+            await user.save();
 
-        // Ordenar ventas por fecha
-        recentSales.sort((a, b) => b.date - a.date);
+            // Enviar notificación de upgrade
+            const tierBenefits = {
+                silver: ['Comisión 22%', 'Soporte prioritario'],
+                gold: ['Comisión 25%', 'Pagos semanales', 'Dashboard avanzado'],
+                platinum: ['Comisión 30%', 'Pagos instantáneos', 'Gerente de cuenta dedicado']
+            };
+
+            if (tierBenefits[currentTier]) {
+                sendTierUpgradeNotification(user.email, {
+                    newTier: currentTier,
+                    benefits: tierBenefits[currentTier]
+                }).catch(err => console.error('Error enviando email de tier:', err));
+            }
+        }
+
+        // Obtener transacciones recientes
+        const AffiliateTransaction = require('../models/AffiliateTransaction');
+        const transactions = await AffiliateTransaction.find({ affiliateId: userId })
+            .sort({ createdAt: -1 })
+            .limit(10);
+
+        // Métricas en tiempo real
+        const metrics = {
+            balance: user.affiliate.balance,
+            lifetimeEarnings: user.affiliate.lifetimeEarnings,
+            tier: user.affiliate.tier,
+            nextTierProgress: calculateNextTierProgress(earnings),
+            activeCodes: promoCodes.length,
+            totalClicks: promoCodes.reduce((acc, curr) => acc + (curr.clicks || 0), 0), // Asumiendo que agregamos clicks al modelo
+            conversionRate: '4.5%' // Placeholder, calcular real
+        };
 
         res.status(200).json({
             success: true,
-            dashboard: {
-                totalCodes: promoCodes.length,
-                totalUses,
-                totalRevenue: totalRevenue.toFixed(2),
-                totalCommission: totalCommission.toFixed(2),
-                pendingPayout: totalCommission.toFixed(2), // TODO: Restar pagos ya realizados
-                commissionRate: '20%',
-                codes: promoCodes.map(p => ({
-                    code: p.code,
-                    uses: p.currentUses,
-                    revenue: p.totalRevenue.toFixed(2),
-                    commission: (p.totalRevenue * (p.affiliateCommission / 100)).toFixed(2),
-                    isActive: p.isActive,
-                    affiliateUrl: `https://www.petmatch.fun?promo=${p.code}`
-                })),
-                recentSales: recentSales.slice(0, 10)
-            }
+            dashboard: metrics,
+            codes: promoCodes,
+            transactions,
+            settings: user.affiliate.settings
         });
 
     } catch (error) {
@@ -114,6 +129,13 @@ exports.getAffiliateDashboard = async (req, res) => {
         res.status(500).json({ error: 'Error al obtener dashboard' });
     }
 };
+
+function calculateNextTierProgress(earnings) {
+    if (earnings >= 10000) return 100;
+    if (earnings >= 5000) return ((earnings - 5000) / 5000) * 100;
+    if (earnings >= 1000) return ((earnings - 1000) / 4000) * 100;
+    return (earnings / 1000) * 100;
+}
 
 // 🎁 APLICAR CÓDIGO PROMOCIONAL
 exports.applyPromoCode = async (req, res) => {
@@ -136,12 +158,39 @@ exports.applyPromoCode = async (req, res) => {
         // Aplicar código
         const benefit = await promoCode.apply(userId, purchaseAmount);
 
-        // Si hay afiliado, notificarle (opcional)
+        // Si hay afiliado, notificarle y actualizar balance
         if (promoCode.affiliateId) {
             const affiliate = await User.findById(promoCode.affiliateId);
             const commission = purchaseAmount * (promoCode.affiliateCommission / 100);
 
-            // TODO: Enviar notificación al afiliado
+            // Actualizar balance del afiliado
+            affiliate.affiliate.balance += commission;
+            affiliate.affiliate.lifetimeEarnings += commission;
+            await affiliate.save();
+
+            // Crear transacción
+            const AffiliateTransaction = require('../models/AffiliateTransaction');
+            await AffiliateTransaction.create({
+                affiliateId: promoCode.affiliateId,
+                type: 'commission',
+                amount: commission,
+                source: 'sale',
+                status: 'completed',
+                metadata: {
+                    commissionRate: promoCode.affiliateCommission,
+                    customerEmail: userId
+                }
+            });
+
+            // Enviar email de notificación
+            if (affiliate.affiliate.settings.emailNotifications) {
+                sendSaleNotification(affiliate.email, {
+                    amount: purchaseAmount.toFixed(2),
+                    commission: commission.toFixed(2),
+                    code: promoCode.code
+                }).catch(err => console.error('Error enviando email:', err));
+            }
+
             console.log(`💰 Afiliado ${affiliate.email} ganó $${commission.toFixed(2)}`);
         }
 

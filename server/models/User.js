@@ -38,6 +38,27 @@ const UserSchema = new mongoose.Schema({
   lastPhotoGenerated: { type: Date },
   favoriteStyle: { type: String },
 
+  // 💼 AFFILIATE SYSTEM (PLATINUM SUITE)
+  affiliate: {
+    isAffiliate: { type: Boolean, default: false },
+    tier: {
+      type: String,
+      enum: ['bronze', 'silver', 'gold', 'platinum'],
+      default: 'bronze'
+    },
+    balance: { type: Number, default: 0.00 }, // Wallet actual
+    lifetimeEarnings: { type: Number, default: 0.00 },
+    payoutMethod: { type: String, enum: ['paypal', 'stripe', 'bank'], default: 'paypal' },
+    payoutDetails: { type: Object }, // Email de PayPal o datos bancarios (encriptados idealmente)
+    twoFactorEnabled: { type: Boolean, default: false },
+    twoFactorSecret: { type: String }, // Para Google Authenticator
+    settings: {
+      emailNotifications: { type: Boolean, default: true },
+      autoPayout: { type: Boolean, default: false },
+      autoPayoutThreshold: { type: Number, default: 100 }
+    }
+  },
+
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

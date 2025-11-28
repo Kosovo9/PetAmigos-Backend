@@ -228,7 +228,7 @@ exports.generateQR = async (req, res) => {
 };
 
 module.exports = {
-    createAffiliateCode,
+    //     createAffiliateCode,
     getAffiliateDashboard,
     applyPromoCode,
     requestPayout,

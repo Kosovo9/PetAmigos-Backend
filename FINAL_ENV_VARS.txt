@@ -37,7 +37,7 @@ SUPABASE_URL=https://rxusmugszksdowppphnw.supabase.co
 SUPABASE_KEY=[PEGAR_SERVICE_ROLE_KEY_AQUI_COMPLETA]
 
 # Stripe (Test Keys)
-STRIPE_SECRET_KEY=sk_test_51Pn4CpLs6SKtSyaKPsZgE5o5xVEfzH5TT86Sn6LIVh9uxA9koZ5UYxAM4V1JNdVxTXrSPVGGoJePvDYdc2ePnH1600aI7FyUZY
+STRIPE_SECRET_KEY=sk_test_PLACEHOLDER_FOR_GITHUB_SECURITY
 STRIPE_WEBHOOK_SECRET=whsec_...
 
 # AI Engines (Placeholders - Actualizar si tienes las keys reales)
@@ -57,7 +57,7 @@ NEXT_PUBLIC_SUPABASE_URL=https://rxusmugszksdowppphnw.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=[PEGAR_ANON_KEY_AQUI_COMPLETA]
 
 # Stripe (Frontend usa publishable key)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_51Pn4CpLs6SKtSyaK4pHQGahcfUVMmsUSXqr21UJjcqBw6727UlIkohoqR1qnPSFrHaLtFS4AuBG4H3ve8hpfLono08F3C4YdMP
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_PLACEHOLDER_FOR_GITHUB_SECURITY
 
 # AI Engines (Frontend Public)
 NEXT_PUBLIC_GOOGLE_AI_KEY=tu_api_key_de_google

@@ -1,0 +1,71 @@
+===================================================
+🔐 CREDENCIALES DE CORREOS PETMATCH.FUN
+===================================================
+
+IMPORTANTE: Crear manualmente en https://outlook.live.com
+
+---------------------------------------------------
+1. CONTACTO GENERAL
+---------------------------------------------------
+Email:    contacto.petmatch@hotmail.com
+Usuario:  contacto.petmatch
+Password: Pm@t2024!Cnt#9x
+Uso:      Formularios de contacto, consultas generales
+
+---------------------------------------------------
+2. VENTAS & COMERCIAL  
+---------------------------------------------------
+Email:    ventas.petmatch@hotmail.com
+Usuario:  ventas.petmatch
+Password: Vnt$Pm24!Cmr#7k
+Uso:      Cotizaciones, planes premium
+
+---------------------------------------------------
+3. SOPORTE TÉCNICO
+---------------------------------------------------
+Email:    soporte.petmatch@hotmail.com
+Usuario:  soporte.petmatch
+Password: Spt&Pm24!Tch#5m
+Uso:      Bugs, problemas técnicos
+
+---------------------------------------------------
+4. AFILIADOS & PARTNERSHIPS
+---------------------------------------------------
+Email:    afiliados.petmatch@hotmail.com
+Usuario:  afiliados.petmatch
+Password: Afl*Pm24!Prtn#8w
+Uso:      Programa de afiliados
+
+---------------------------------------------------
+5. ADMIN & NOTIFICACIONES (SMTP)
+---------------------------------------------------
+Email:    admin.petmatch@hotmail.com
+Usuario:  admin.petmatch
+Password: Adm#Pm24!Ntf#6q
+Uso:      Envío automático de emails del sistema
+
+===================================================
+CONFIGURACIÓN SMTP (Para .env)
+===================================================
+
+SMTP_HOST=smtp-mail.outlook.com
+SMTP_PORT=587
+SMTP_USER=admin.petmatch@hotmail.com
+SMTP_PASS=Adm#Pm24!Ntf#6q
+
+===================================================
+INSTRUCCIONES:
+===================================================
+1. Ir a: https://outlook.live.com/owa/?nlp=1
+2. Click "Crear cuenta gratuita"
+3. Ingresar usuario (ej: contacto.petmatch)
+4. Elegir @hotmail.com
+5. Usar password de arriba
+6. Verificar con teléfono/SMS
+7. Repetir para los 5 correos
+
+Tiempo estimado: 10-15 minutos total
+
+===================================================
+GENERADO: 2025-11-28 13:50 GMT-6
+===================================================

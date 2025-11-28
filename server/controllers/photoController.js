@@ -251,10 +251,3 @@ exports.purchasePhoto = async (req, res) => {
         res.status(500).json({ error: 'Error al comprar foto' });
     }
 };
-
-module.exports = {
-    generatePhoto,
-    downloadPhoto,
-    purchasePhoto,
-    GeneratedPhoto
-};

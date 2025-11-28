@@ -150,3 +150,4 @@ cd petmatch-ai/
 # Vite logs
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+FINAL_ENV_VARS.txt

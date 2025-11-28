@@ -227,10 +227,3 @@ exports.generateQR = async (req, res) => {
     }
 };
 
-module.exports = {
-    createAffiliateCode,
-    getAffiliateDashboard,
-    applyPromoCode,
-    requestPayout,
-    generateQR
-};

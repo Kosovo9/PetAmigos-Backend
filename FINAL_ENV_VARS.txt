@@ -1,0 +1,64 @@
+# 🔑 VARIABLES DE ENTORNO MAESTRAS - PETMATCH.FUN
+# Copia y pega esto en Render (Backend) y Vercel (Frontend)
+
+# ==========================================
+# 🌍 GENERAL (Render & Vercel)
+# ==========================================
+NODE_ENV=production
+PORT=5000
+CLIENT_URL=https://www.petmatch.fun
+NEXT_PUBLIC_API_URL=https://petmatch-backend.onrender.com/api
+NEXT_PUBLIC_DOMAIN=www.petmatch.fun
+
+# ==========================================
+# 🗄️ DATABASE (Render)
+# ==========================================
+# Usa tu URI real de MongoDB Atlas
+MONGODB_URI=mongodb+srv://petamigos_user:PetAmig0s2025!W0rld#Secure@cluster0.baflqoq.mongodb.net/petamigos?retryWrites=true&w=majority
+
+# ==========================================
+# 🔐 SEGURIDAD (Render)
+# ==========================================
+JWT_SECRET=PetAmigosJWT2025SecureTokenKey!Kosovo9#QuantumSpeed
+# Genera uno nuevo si quieres más seguridad
+
+# ==========================================
+# 🤖 AI ENGINES (Render)
+# ==========================================
+# Google AI Studio (Gemini) - GRATIS
+GOOGLE_AI_API_KEY=tu_api_key_de_google_aistudio
+
+# Higgsfield (Sora/Nano Banana) - PRO
+HIGGSFIELD_API_KEY=tu_api_key_de_higgsfield
+
+# Hugging Face - FALLBACK
+HUGGINGFACE_TOKEN=tu_token_de_huggingface
+
+# ==========================================
+# 💳 PAGOS (Render)
+# ==========================================
+# Stripe
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# PayPal (Para pagos a afiliados)
+PAYPAL_CLIENT_ID=...
+PAYPAL_SECRET=...
+
+# ==========================================
+# ☁️ STORAGE (Render)
+# ==========================================
+# Supabase
+SUPABASE_URL=https://tu-proyecto.supabase.co
+SUPABASE_KEY=tu_service_role_key
+
+# Cloudflare R2 (Opcional)
+CF_ACCOUNT_ID=...
+CF_API_TOKEN=...
+
+# ==========================================
+# 📱 REDES SOCIALES (Opcional)
+# ==========================================
+# Para login social si lo activas
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...

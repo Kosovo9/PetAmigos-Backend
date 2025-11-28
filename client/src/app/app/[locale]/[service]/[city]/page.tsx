@@ -33,11 +33,11 @@ export default async function ServicePage({
 }: {
   params: { locale: string; service: string; city: string };
 }) {
-  const { locale, service, city } = params;
+  const { locale, service, city } = await params; // Next.js 15 params son async
 
   // Validar locale
   if (!locales.includes(locale as any)) notFound();
-  
+
   // Validar servicio
   if (!services.includes(service as any)) notFound();
 
@@ -48,7 +48,7 @@ export default async function ServicePage({
   const t = await getTranslations({ locale, namespace: 'common' });
 
   // Obtener proveedores desde Supabase
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: providers, error } = await supabase
     .from('white_pages_providers')
     .select('*')
@@ -63,12 +63,12 @@ export default async function ServicePage({
   }
 
   return (
-    <ServicePageClient 
-      providers={providers} 
-      service={service} 
-      city={city} 
-      locale={locale} 
-      t={t} 
+    <ServicePageClient
+      providers={providers || []}
+      service={service}
+      city={city}
+      locale={locale}
+      t={t}
     />
   );
 }

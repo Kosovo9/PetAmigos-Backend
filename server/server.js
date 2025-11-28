@@ -18,6 +18,19 @@ const wafShield = require('./middleware/wafShield');
 
 const auth = require('./middleware/auth');
 
+// 🛡️ FORT KNOX SECURITY SUITE
+const {
+  helmetConfig,
+  generalLimiter,
+  authLimiter,
+  ipBlacklistMiddleware,
+  antiScrapingMiddleware,
+  antiCloningMiddleware,
+  csrfProtection,
+  advancedInjectionProtection,
+  fileUploadProtection
+} = require('./middleware/fortKnoxSecurity');
+
 
 
 const app = express();
@@ -26,16 +39,39 @@ const server = http.createServer(app);
 
 
 
+// 🛡️ CAPA 1: Helmet - Headers de Seguridad HTTP
+app.use(helmetConfig);
+
+// 🛡️ CAPA 2: IP Blacklist
+app.use(ipBlacklistMiddleware);
+
+// 🛡️ CAPA 3: Anti-Scraping (Bots)
+app.use(antiScrapingMiddleware);
+
+// 🛡️ CAPA 4: Rate Limiting General
+app.use(generalLimiter);
+
 app.use(cors());
 
 app.use(express.json({ limit: '50mb' }));
 
 
 
-// 🔒 WAF: Protección global contra inyecciones y ataques
+// 🔒 CAPA 5: WAF Original (Inyecciones básicas)
 
 app.use(wafShield);
 
+// 🔒 CAPA 6: Inyecciones Avanzadas
+app.use(advancedInjectionProtection);
+
+// 🔒 CAPA 7: Anti-Cloning
+app.use(antiCloningMiddleware);
+
+// 🔒 CAPA 8: CSRF Protection
+app.use(csrfProtection);
+
+// 🔒 CAPA 9: File Upload Protection
+app.use(fileUploadProtection);
 
 
 

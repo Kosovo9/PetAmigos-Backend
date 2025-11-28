@@ -80,7 +80,7 @@ io.on('connection', (socket) => {
 
 // MongoDB Connection con optimizaciones de performance
 
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect(process.env.MONGODB_URI, {
 
   maxPoolSize: 10, // Máximo de conexiones simultáneas
 

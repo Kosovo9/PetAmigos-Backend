@@ -16,13 +16,13 @@ const auth = async (req, res, next) => {
 
     }
 
-    
+
 
     // 2. Obtener el token del header (Ej: "Bearer token...")
 
     const token = req.headers.authorization.split(" ")[1];
 
-    
+
 
     if (!token) {
 
@@ -40,7 +40,9 @@ const auth = async (req, res, next) => {
 
     // 4. Pasar el ID de usuario a la solicitud para usarlo en los controladores
 
+    // 4. Pasar el ID de usuario a la solicitud para usarlo en los controladores
     req.userId = decodedData.id;
+    req.user = { id: decodedData.id, email: decodedData.email };
 
 
 

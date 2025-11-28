@@ -115,29 +115,26 @@ io.on('connection', (socket) => {
 
 
 // MongoDB Connection con optimizaciones de performance
+const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
 
-mongoose.connect(process.env.MONGODB_URI, {
+if (!mongoUri) {
+  console.error('❌ FATAL: MONGODB_URI no definida');
+  process.exit(1);
+}
 
+mongoose.connect(mongoUri, {
   maxPoolSize: 10, // Máximo de conexiones simultáneas
-
   serverSelectionTimeoutMS: 5000, // Timeout de selección de servidor
-
   socketTimeoutMS: 45000, // Timeout de socket
-
   bufferCommands: false // Deshabilitar buffering para mejor performance
-
 })
-
   .then(() => console.log('✅ BD Conectada'))
-
   .catch(err => console.error('❌ Error BD:', err));
-
-
 
 // Rutas API
 
 // Health check (sin auth para monitoreo)
-
+app.get('/', (req, res) => res.status(200).send('PetMatch Backend API is Running 🚀'));
 app.use('/', require('./routes/healthRoutes'));
 
 

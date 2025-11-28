@@ -195,6 +195,8 @@ app.use('/api/affiliates', require('./routes/affiliateRoutes')); // 💰 Sistema
 app.use('/api/photos', require('./routes/photoRoutes')); // 🎨 Generación de Fotos con Watermark
 
 app.use('/api/love-stories', require('./routes/loveStoriesRoutes')); // ❤️ Historias de Adopción
+app.use('/api/fly', require('./routes/flyRoutes')); // ✈️ PetMatch Fly Policies
+app.use('/api/digital-twin', require('./routes/digitalTwinRoutes')); // 🧬 Pet Digital Twin
 
 
 

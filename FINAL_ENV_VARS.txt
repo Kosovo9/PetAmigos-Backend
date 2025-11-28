@@ -1,64 +1,64 @@
-# 🔑 VARIABLES DE ENTORNO MAESTRAS - PETMATCH.FUN
-# Copia y pega esto en Render (Backend) y Vercel (Frontend)
+# 🚀 GUÍA MAESTRA DE DEPLOY - PETMATCH.FUN (PARA COMET)
+# =================================================================================
+# INSTRUCCIONES RÁPIDAS AL LLEGAR:
+# 1. Abre Supabase (Settings -> API) y copia las keys 'service_role' y 'anon'.
+# 2. Pégalas abajo donde dice [PEGAR_AQUI...].
+# 3. Copia la sección "RENDER" y pégala en Render Dashboard.
+# 4. Copia la sección "VERCEL" y pégala en Vercel Dashboard.
+# 5. Configura Cloudflare con los datos de la sección "DNS".
+# =================================================================================
 
-# ==========================================
-# 🌍 GENERAL (Render & Vercel)
-# ==========================================
+# 🌐 SECCIÓN 1: CLOUDFLARE DNS (Configurar en dash.cloudflare.com)
+# ---------------------------------------------------------------------------------
+# Registro 1 (Frontend):
+# Type: CNAME
+# Name: www
+# Target: cname.vercel-dns.com
+# Proxy: Desactivado (Nube Gris / DNS Only)
+
+# Registro 2 (Backend):
+# Type: CNAME
+# Name: api
+# Target: cd-server-andand-npm-install.onrender.com
+# Proxy: Desactivado (Nube Gris / DNS Only)
+
+
+# 🔧 SECCIÓN 2: VARIABLES PARA RENDER (Backend)
+# Copiar todo este bloque y pegar en Render -> Environment
+# ---------------------------------------------------------------------------------
 NODE_ENV=production
 PORT=5000
 CLIENT_URL=https://www.petmatch.fun
-NEXT_PUBLIC_API_URL=https://petmatch-backend.onrender.com/api
-NEXT_PUBLIC_DOMAIN=www.petmatch.fun
-
-# ==========================================
-# 🗄️ DATABASE (Render)
-# ==========================================
-# Usa tu URI real de MongoDB Atlas
 MONGODB_URI=mongodb+srv://petamigos_user:PetAmig0s2025!W0rld#Secure@cluster0.baflqoq.mongodb.net/petamigos?retryWrites=true&w=majority
-
-# ==========================================
-# 🔐 SEGURIDAD (Render)
-# ==========================================
 JWT_SECRET=PetAmigosJWT2025SecureTokenKey!Kosovo9#QuantumSpeed
-# Genera uno nuevo si quieres más seguridad
 
-# ==========================================
-# 🤖 AI ENGINES (Render)
-# ==========================================
-# Google AI Studio (Gemini) - GRATIS
-GOOGLE_AI_API_KEY=tu_api_key_de_google_aistudio
+# Supabase (Backend usa service_role)
+SUPABASE_URL=https://rxusmugszksdowppphnw.supabase.co
+SUPABASE_KEY=[PEGAR_SERVICE_ROLE_KEY_AQUI_COMPLETA]
 
-# Higgsfield (Sora/Nano Banana) - PRO
-HIGGSFIELD_API_KEY=tu_api_key_de_higgsfield
-
-# Hugging Face - FALLBACK
-HUGGINGFACE_TOKEN=tu_token_de_huggingface
-
-# ==========================================
-# 💳 PAGOS (Render)
-# ==========================================
-# Stripe
-STRIPE_SECRET_KEY=sk_live_...
+# Stripe (Test Keys)
+STRIPE_SECRET_KEY=sk_test_51Pn4CpLs6SKtSyaKPsZgE5o5xVEfzH5TT86Sn6LIVh9uxA9koZ5UYxAM4V1JNdVxTXrSPVGGoJePvDYdc2ePnH1600aI7FyUZY
 STRIPE_WEBHOOK_SECRET=whsec_...
 
-# PayPal (Para pagos a afiliados)
-PAYPAL_CLIENT_ID=...
-PAYPAL_SECRET=...
+# AI Engines (Placeholders - Actualizar si tienes las keys reales)
+GOOGLE_AI_API_KEY=tu_api_key_de_google
+HIGGSFIELD_API_KEY=tu_api_key_de_higgsfield
+HUGGINGFACE_TOKEN=tu_token_de_huggingface
 
-# ==========================================
-# ☁️ STORAGE (Render)
-# ==========================================
-# Supabase
-SUPABASE_URL=https://tu-proyecto.supabase.co
-SUPABASE_KEY=tu_service_role_key
 
-# Cloudflare R2 (Opcional)
-CF_ACCOUNT_ID=...
-CF_API_TOKEN=...
+# ⚡ SECCIÓN 3: VARIABLES PARA VERCEL (Frontend)
+# Copiar todo este bloque y pegar en Vercel -> Settings -> Environment Variables
+# ---------------------------------------------------------------------------------
+NEXT_PUBLIC_API_URL=https://cd-server-andand-npm-install.onrender.com/api
+NEXT_PUBLIC_DOMAIN=www.petmatch.fun
 
-# ==========================================
-# 📱 REDES SOCIALES (Opcional)
-# ==========================================
-# Para login social si lo activas
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
+# Supabase (Frontend usa anon key)
+NEXT_PUBLIC_SUPABASE_URL=https://rxusmugszksdowppphnw.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[PEGAR_ANON_KEY_AQUI_COMPLETA]
+
+# Stripe (Frontend usa publishable key)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_51Pn4CpLs6SKtSyaK4pHQGahcfUVMmsUSXqr21UJjcqBw6727UlIkohoqR1qnPSFrHaLtFS4AuBG4H3ve8hpfLono08F3C4YdMP
+
+# AI Engines (Frontend Public)
+NEXT_PUBLIC_GOOGLE_AI_KEY=tu_api_key_de_google
+NEXT_PUBLIC_HIGGSFIELD_KEY=tu_api_key_de_higgsfield

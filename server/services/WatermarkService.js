@@ -8,8 +8,8 @@ const fs = require('fs').promises;
 class WatermarkService {
 
     constructor() {
-        this.watermarkText = 'PetMatch.fun';
-        this.watermarkOpacity = 0.3;
+        this.watermarkText = 'PetMatch.Fun';
+        this.watermarkOpacity = 0.5;
     }
 
     // 🖼️ APLICAR WATERMARK A IMAGEN
@@ -18,9 +18,9 @@ class WatermarkService {
             const {
                 text = this.watermarkText,
                 opacity = this.watermarkOpacity,
-                position = 'center', // 'center', 'bottom-right', 'diagonal'
-                fontSize = 48,
-                color = 'rgba(255, 255, 255, 0.5)'
+                position = 'diagonal', // Forzado a diagonal por defecto
+                fontSize = 60,
+                color = 'rgba(255, 0, 0, 0.6)' // Rojo semi-transparente
             } = options;
 
             console.log('🎨 Aplicando watermark...');
@@ -65,8 +65,8 @@ class WatermarkService {
 
     // 📐 CREAR WATERMARK DIAGONAL
     createDiagonalWatermark(width, height, text, fontSize, opacity) {
-        const spacing = 200;
-        const angle = -45;
+        const spacing = 300;
+        const angle = -45; // De abajo-izquierda a arriba-derecha
 
         let watermarks = '';
 
@@ -78,8 +78,8 @@ class WatermarkService {
             y="${y}"
             font-family="Arial, sans-serif"
             font-size="${fontSize}"
-            font-weight="bold"
-            fill="white"
+            font-weight="900" 
+            fill="red"
             opacity="${opacity}"
             transform="rotate(${angle} ${x} ${y})"
           >${text}</text>

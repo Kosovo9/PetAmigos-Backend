@@ -137,3 +137,54 @@ exports.updateUserRole = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+// 📊 ESTADÍSTICAS DE GENERACIÓN EN TIEMPO REAL
+exports.getGenerationStats = async (req, res) => {
+    try {
+        const fs = require('fs');
+        const path = require('path');
+
+        // Directorio de salida del batch
+        const outputDir = path.join(__dirname, '../../COLLIE_BATCH_OUTPUT');
+
+        let stats = {
+            totalImages: 0,
+            totalSizeMB: 0,
+            lastGenerated: null,
+            files: []
+        };
+
+        if (fs.existsSync(outputDir)) {
+            const files = fs.readdirSync(outputDir);
+            stats.totalImages = files.length;
+
+            stats.files = files.map(file => {
+                const filePath = path.join(outputDir, file);
+                const fileStats = fs.statSync(filePath);
+                stats.totalSizeMB += fileStats.size;
+
+                return {
+                    name: file,
+                    size: (fileStats.size / 1024).toFixed(2) + ' KB',
+                    created: fileStats.birthtime,
+                    engine: 'Anti-Fail System',
+                    quality: '8K'
+                };
+            }).sort((a, b) => b.created - a.created); // Más recientes primero
+
+            stats.totalSizeMB = (stats.totalSizeMB / (1024 * 1024)).toFixed(2);
+            if (stats.files.length > 0) {
+                stats.lastGenerated = stats.files[0].created;
+            }
+        }
+
+        res.json({
+            success: true,
+            stats
+        });
+
+    } catch (error) {
+        console.error('Error getting generation stats:', error);
+        res.status(500).json({ error: 'Error al obtener estadísticas' });
+    }
+};

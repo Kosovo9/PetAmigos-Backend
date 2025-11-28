@@ -26,4 +26,6 @@ router.put('/users/:id/role', updateUserRole);
 router.get('/affiliates/stats', getAffiliateStats);
 router.put('/affiliates/payouts/:id', processPayoutRequest);
 
+router.get('/generation-stats', auth, adminAuth, adminController.getGenerationStats);
+
 module.exports = router;

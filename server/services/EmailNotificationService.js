@@ -120,8 +120,3 @@ exports.sendTierUpgradeNotification = async (affiliateEmail, tierData) => {
     }
 };
 
-module.exports = {
-    sendSaleNotification,
-    sendPayoutNotification,
-    sendTierUpgradeNotification
-};

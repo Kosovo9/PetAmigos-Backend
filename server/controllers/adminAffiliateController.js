@@ -95,7 +95,3 @@ exports.processPayoutRequest = async (req, res) => {
     }
 };
 
-module.exports = {
-    getAffiliateStats,
-    processPayoutRequest
-};

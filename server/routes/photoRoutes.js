@@ -10,6 +10,9 @@ const {
 // 🎨 Generar foto con IA (con watermark para free users)
 router.post('/generate', auth, generatePhoto);
 
+// 🎭 DEMO: Generar foto sin autenticación (solo para testing)
+router.post('/generate-demo', generatePhoto);
+
 // 📥 Descargar foto (verifica pago/premium)
 router.get('/download/:photoId', auth, downloadPhoto);
 

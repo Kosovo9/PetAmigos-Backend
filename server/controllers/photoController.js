@@ -77,23 +77,36 @@ const GeneratedPhoto = mongoose.model('GeneratedPhoto', GeneratedPhotoSchema);
 // 🎨 GENERAR FOTO CON WATERMARK
 exports.generatePhoto = async (req, res) => {
     try {
-        const userId = req.userId;
+        const userId = req.userId || 'demo-user'; // Demo mode si no hay userId
         const options = req.body;
 
-        // 1. Verificar usuario y créditos
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
-        }
+        // 1. Verificar usuario y créditos (skip en demo mode)
+        let user;
+        if (userId !== 'demo-user') {
+            user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({ error: 'Usuario no encontrado' });
+            }
 
-        if (!user.hasCredits(1)) {
-            return res.status(402).json({
-                error: 'Sin créditos',
-                upsell: {
-                    basic: { price: 4.99, credits: 50 },
-                    pro: { price: 14.99, credits: 'unlimited' }
-                }
-            });
+            if (!user.hasCredits(1)) {
+                return res.status(402).json({
+                    error: 'Sin créditos',
+                    upsell: {
+                        basic: { price: 4.99, credits: 50 },
+                        pro: { price: 14.99, credits: 'unlimited' }
+                    }
+                });
+            }
+        } else {
+            // Usuario demo (para testing)
+            user = {
+                email: 'demo@petmatch.fun',
+                isPremium: false,
+                subscriptionTier: 'free',
+                credits: 999,
+                useCredits: async () => true,
+                hasCredits: () => true
+            };
         }
 
         // 2. Generar imagen con IA

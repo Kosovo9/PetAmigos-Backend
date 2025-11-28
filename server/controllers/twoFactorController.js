@@ -116,8 +116,3 @@ exports.disable2FA = async (req, res) => {
     }
 };
 
-module.exports = {
-    enable2FA,
-    verify2FA,
-    disable2FA
-};

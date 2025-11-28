@@ -194,6 +194,7 @@ app.use('/api/photos', require('./routes/photoRoutes')); // 🎨 Generación de 
 app.use('/api/love-stories', require('./routes/loveStoriesRoutes')); // ❤️ Historias de Adopción
 app.use('/api/fly', require('./routes/flyRoutes')); // ✈️ PetMatch Fly Policies
 app.use('/api/digital-twin', require('./routes/digitalTwinRoutes')); // 🧬 Pet Digital Twin
+app.use('/api/admin', require('./routes/adminRoutes')); // 🛡️ Admin Panel (Nivel NASA)
 
 
 

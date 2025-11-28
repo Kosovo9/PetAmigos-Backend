@@ -114,22 +114,31 @@ io.on('connection', (socket) => {
 
 
 
-// MongoDB Connection con optimizaciones de performance
-const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+// ═══════════════════════════════════════════════════════
+// 🛡️ 3. BASE DE DATOS - ANTI-FALLOS 100X
+// ═══════════════════════════════════════════════════════
+const { connectWithRetry, checkConnection } = require('./config/database');
 
-if (!mongoUri) {
-  console.error('❌ FATAL: MONGODB_URI no definida');
-  process.exit(1);
-}
+// Iniciar conexión con retry automático
+(async () => {
+  const connected = await connectWithRetry();
+  if (!connected) {
+    console.warn('⚠️ Servidor iniciando SIN base de datos');
+    console.warn('   El sistema funcionará en modo DEMO con funciones limitadas');
+  }
+})();
 
-mongoose.connect(mongoUri, {
-  maxPoolSize: 10, // Máximo de conexiones simultáneas
-  serverSelectionTimeoutMS: 5000, // Timeout de selección de servidor
-  socketTimeoutMS: 45000, // Timeout de socket
-  bufferCommands: false // Deshabilitar buffering para mejor performance
-})
-  .then(() => console.log('✅ BD Conectada'))
-  .catch(err => console.error('❌ Error BD:', err));
+// Middleware para verificar DB en rutas que la necesitan
+const requireDB = (req, res, next) => {
+  if (!checkConnection()) {
+    return res.status(503).json({
+      error: 'Base de datos no disponible',
+      mode: 'demo',
+      message: 'El servidor está en modo demo. Algunas funciones están limitadas.'
+    });
+  }
+  next();
+};
 
 // Rutas API
 

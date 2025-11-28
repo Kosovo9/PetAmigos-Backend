@@ -1,46 +1,42 @@
-const axios = require('axios');
+const mongoose = require('mongoose');
 const { buildMegaPrompt } = require('./MegaPromptSystem');
 
-// 🤖 MULTI-ENGINE AI GENERATION SERVICE
-// Prioridad: Google AI (gratis) → Higgsfield (pro) → Hugging Face (fallback)
+// 🛡️ SISTEMA ANTI-FALLOS 100X - MULTI-ENGINE CON FALLBACKS TOTALES
 
 class ImageGenerationService {
 
-    // 🎨 ENGINE 1: GOOGLE AI STUDIO (GRATIS - PRINCIPAL)
+    // 🎨 ENGINE 1: GOOGLE AI (GRATIS - PRINCIPAL)
     static async generateWithGoogleAI(options) {
         try {
+            if (!process.env.GOOGLE_AI_API_KEY) {
+                throw new Error('Google AI API key not configured');
+            }
+
             const { prompt, negativePrompt } = buildMegaPrompt(options);
+            console.log('🎨 Generando con Google AI Studio...');
 
-            console.log('🎨 Generando con Google AI Studio (Gemini 2.0 Flash)...');
-
+            const axios = require('axios');
             const response = await axios.post(
                 `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${process.env.GOOGLE_AI_API_KEY}`,
                 {
                     contents: [{
-                        parts: [{
-                            text: `Generate a hyper-realistic image based on this description: ${prompt}\n\nAvoid: ${negativePrompt}\n\nReturn only the image URL.`
-                        }]
+                        parts: [{ text: prompt }]
                     }],
                     generationConfig: {
                         temperature: 0.9,
                         topK: 40,
-                        topP: 0.95,
-                        maxOutputTokens: 8192
+                        topP: 0.95
                     }
                 },
-                {
-                    headers: { 'Content-Type': 'application/json' }
-                }
+                { timeout: 30000 }
             );
 
-            // Extraer URL de imagen de la respuesta
             const imageUrl = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
             return {
                 success: true,
                 imageUrl,
                 engine: 'google-ai',
-                cost: 0, // GRATIS
+                cost: 0,
                 quality: '4K'
             };
 
@@ -50,28 +46,29 @@ class ImageGenerationService {
         }
     }
 
-    // 🎥 ENGINE 2: HIGGSFIELD.AI (PRO - SORA + NANO BANANA)
+    // 🎥 ENGINE 2: HIGGSFIELD (PRO)
     static async generateWithHiggsfield(options) {
         try {
+            if (!process.env.HIGGSFIELD_API_KEY) {
+                throw new Error('Higgsfield API key not configured');
+            }
+
             const { prompt } = buildMegaPrompt(options);
+            console.log('🎥 Generando con Higgsfield...');
 
-            console.log('🎥 Generando con Higgsfield.ai (Nano Banana)...');
-
+            const axios = require('axios');
             const response = await axios.post(
                 'https://api.higgsfield.ai/v1/generate',
                 {
-                    model: 'nano-banana', // O 'sora' para video
+                    model: 'nano-banana',
                     prompt: prompt,
                     width: 1024,
                     height: 1024,
-                    num_inference_steps: 50,
-                    guidance_scale: 7.5
+                    num_inference_steps: 50
                 },
                 {
-                    headers: {
-                        'Authorization': `Bearer ${process.env.HIGGSFIELD_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Authorization': `Bearer ${process.env.HIGGSFIELD_API_KEY}` },
+                    timeout: 60000
                 }
             );
 
@@ -79,7 +76,7 @@ class ImageGenerationService {
                 success: true,
                 imageUrl: response.data.output_url,
                 engine: 'higgsfield',
-                cost: 0, // Incluido en plan PRO
+                cost: 0,
                 quality: '8K'
             };
 
@@ -92,10 +89,14 @@ class ImageGenerationService {
     // 🤗 ENGINE 3: HUGGING FACE (GRATIS - FALLBACK)
     static async generateWithHuggingFace(options) {
         try {
+            if (!process.env.HUGGINGFACE_TOKEN) {
+                throw new Error('HuggingFace token not configured');
+            }
+
             const { prompt, negativePrompt } = buildMegaPrompt(options);
+            console.log('🤗 Generando con Hugging Face...');
 
-            console.log('🤗 Generando con Hugging Face (Stable Diffusion XL)...');
-
+            const axios = require('axios');
             const response = await axios.post(
                 'https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0',
                 {
@@ -103,29 +104,23 @@ class ImageGenerationService {
                     parameters: {
                         negative_prompt: negativePrompt,
                         num_inference_steps: 50,
-                        guidance_scale: 7.5,
                         width: 1024,
                         height: 1024
                     }
                 },
                 {
-                    headers: {
-                        'Authorization': `Bearer ${process.env.HUGGINGFACE_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    responseType: 'arraybuffer'
+                    headers: { 'Authorization': `Bearer ${process.env.HUGGINGFACE_TOKEN}` },
+                    responseType: 'arraybuffer',
+                    timeout: 60000
                 }
             );
 
-            // Convertir buffer a base64
             const imageBase64 = Buffer.from(response.data, 'binary').toString('base64');
-            const imageUrl = `data:image/jpeg;base64,${imageBase64}`;
-
             return {
                 success: true,
-                imageUrl,
+                imageUrl: `data:image/jpeg;base64,${imageBase64}`,
                 engine: 'huggingface',
-                cost: 0, // GRATIS
+                cost: 0,
                 quality: '1K'
             };
 
@@ -135,18 +130,55 @@ class ImageGenerationService {
         }
     }
 
-    // 🎯 MÉTODO PRINCIPAL CON FALLBACK AUTOMÁTICO
-    static async generate(options, userTier = 'free') {
-        const engines = [];
+    // 🎨 FALLBACK LOCAL: Imagen de placeholder profesional
+    static async generatePlaceholder(options) {
+        console.log('🎨 Generando placeholder (sin APIs configuradas)...');
 
-        // Determinar orden de engines según tier del usuario
-        if (userTier === 'pro') {
-            // Pro users: Mejor calidad primero
-            engines.push('higgsfield', 'google-ai', 'huggingface');
-        } else {
-            // Free users: Gratis primero
-            engines.push('google-ai', 'huggingface', 'higgsfield');
-        }
+        // Retornar un placeholder profesional con el prompt del usuario
+        const placeholderSvg = `
+            <svg width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#7C3AED;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#EC4899;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="1024" height="1024" fill="url(#grad)"/>
+                <text x="512" y="400" font-family="Arial, sans-serif" font-size="48" fill="white" text-anchor="middle" font-weight="bold">
+                    PetMatch AI
+                </text>
+                <text x="512" y="500" font-family="Arial, sans-serif" font-size="24" fill="rgba(255,255,255,0.8)" text-anchor="middle">
+                    ${options.petSpecies || 'Pet'} - ${options.scenario || 'Christmas'}
+                </text>
+                <text x="512" y="600" font-family="Arial, sans-serif" font-size="18" fill="rgba(255,255,255,0.6)" text-anchor="middle">
+                    Por favor configura las API keys para generar con IA
+                </text>
+            </svg>
+        `;
+
+        const buffer = Buffer.from(placeholderSvg);
+        const base64 = buffer.toString('base64');
+
+        return {
+            success: true,
+            imageUrl: `data:image/svg+xml;base64,${base64}`,
+            engine: 'placeholder',
+            cost: 0,
+            quality: 'placeholder',
+            isPlaceholder: true,
+            message: '⚠️ API keys no configuradas. Configura GOOGLE_AI_API_KEY para usar IA real.'
+        };
+    }
+
+    // 🎯 MÉTODO PRINCIPAL CON FALLBACK TOTAL ANTI-FALLOS
+    static async generate(options, userTier = 'free') {
+        console.log('🚀 Iniciando generación con sistema anti-fallos...');
+
+        const engines = userTier === 'pro'
+            ? ['higgsfield', 'google-ai', 'huggingface', 'placeholder']
+            : ['google-ai', 'huggingface', 'higgsfield', 'placeholder'];
+
+        let lastError = null;
 
         // Intentar con cada engine hasta que uno funcione
         for (const engine of engines) {
@@ -163,42 +195,60 @@ class ImageGenerationService {
                     case 'huggingface':
                         result = await this.generateWithHuggingFace(options);
                         break;
+                    case 'placeholder':
+                        result = await this.generatePlaceholder(options);
+                        break;
                 }
 
-                if (result.success) {
-                    console.log(`✅ Imagen generada exitosamente con ${engine}`);
+                if (result && result.success) {
+                    console.log(`✅ Generación exitosa con ${engine}`);
                     return result;
                 }
 
             } catch (error) {
-                console.log(`⚠️ ${engine} falló, intentando siguiente engine...`);
+                console.log(`⚠️ ${engine} falló: ${error.message}`);
+                lastError = error;
                 continue;
             }
         }
 
-        // Si todos fallaron
-        throw new Error('Todos los engines de IA fallaron. Intenta de nuevo.');
+        // Si todo falló (incluyendo placeholder), retornar error con info útil
+        return {
+            success: false,
+            error: 'No se pudo generar la imagen',
+            details: lastError?.message || 'Unknown error',
+            suggestion: 'Configura al menos una API key (GOOGLE_AI_API_KEY recomendado)',
+            engine: 'none',
+            isPlaceholder: false
+        };
     }
 
-    // 🎥 GENERAR VIDEO CON SORA (SOLO PRO)
+    // 🎥 GENERAR VIDEO (SOLO PRO) - CON FALLBACK
     static async generateVideo(imageUrl, prompt) {
         try {
+            if (!process.env.HIGGSFIELD_API_KEY) {
+                return {
+                    success: false,
+                    error: 'Higgsfield API key required for video generation',
+                    fallback: 'static-image'
+                };
+            }
+
             console.log('🎥 Generando video con Sora...');
 
+            const axios = require('axios');
             const response = await axios.post(
                 'https://api.higgsfield.ai/v1/generate',
                 {
                     model: 'sora',
                     input_image: imageUrl,
-                    prompt: prompt || 'Animate this Christmas pet photo with falling snow and twinkling lights',
+                    prompt: prompt || 'Animate with falling snow',
                     duration: 5,
                     fps: 24
                 },
                 {
-                    headers: {
-                        'Authorization': `Bearer ${process.env.HIGGSFIELD_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Authorization': `Bearer ${process.env.HIGGSFIELD_API_KEY}` },
+                    timeout: 120000
                 }
             );
 
@@ -210,8 +260,12 @@ class ImageGenerationService {
             };
 
         } catch (error) {
-            console.error('❌ Sora video generation falló:', error.message);
-            throw error;
+            console.error('❌ Video generation falló:', error.message);
+            return {
+                success: false,
+                error: error.message,
+                fallback: 'static-image'
+            };
         }
     }
 }

@@ -154,6 +154,10 @@ app.use('/api/fusion', require('./routes/fusionRoutes')); // 🚀 Fusión 10x (F
 
 app.use('/api/referrals', require('./routes/referralRoutes')); // 💎 Sistema de Créditos y Viral Loop
 
+app.use('/api/affiliates', require('./routes/affiliateRoutes')); // 💰 Sistema de Afiliados y Códigos Promo
+
+app.use('/api/photos', require('./routes/photoRoutes')); // 🎨 Generación de Fotos con Watermark
+
 
 
 const PORT = process.env.PORT || 5000;

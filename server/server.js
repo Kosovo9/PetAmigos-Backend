@@ -152,6 +152,8 @@ app.use('/api/memory', require('./routes/memoryRoutes'));
 
 app.use('/api/fusion', require('./routes/fusionRoutes')); // 🚀 Fusión 10x (Fly, ESG, Influencers)
 
+app.use('/api/referrals', require('./routes/referralRoutes')); // 💎 Sistema de Créditos y Viral Loop
+
 
 
 const PORT = process.env.PORT || 5000;

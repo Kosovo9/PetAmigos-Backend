@@ -19,14 +19,7 @@ const services = [
   'veterinario', 'fotografia', 'taxi-pet', 'pension'
 ] as const;
 
-export async function generateStaticParams() {
-  const cities = ['cdmx', 'guadalajara', 'monterrey', 'puebla', 'tijuana', 'merida', 'leon', 'juarez', 'cancun', 'queretaro'];
-  return locales.flatMap(locale =>
-    services.flatMap(service =>
-      cities.map(city => ({ locale, service, city }))
-    )
-  );
-}
+// generateStaticParams removed for SSR
 
 export default async function ServicePage({
   params

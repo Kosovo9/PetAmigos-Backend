@@ -231,6 +231,6 @@ module.exports = {
     //     createAffiliateCode,
     // getAffiliateDashboard,
     // applyPromoCode,
-    requestPayout,
+    // requestPayout,
     generateQR
 };

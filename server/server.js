@@ -43,7 +43,16 @@ app.use(wafShield);
 
 const io = new Server(server, {
 
-  cors: { origin: process.env.CLIENT_URL, methods: ["GET", "POST"] }
+  cors: {
+    origin: [
+      process.env.CLIENT_URL,
+      "https://www.petmatch.fun",
+      "https://petmatch.fun",
+      "http://localhost:3000" // Para desarrollo local
+    ],
+    methods: ["GET", "POST"],
+    credentials: true
+  }
 
 });
 

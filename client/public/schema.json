@@ -1,0 +1,41 @@
+{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "PetMatch AI",
+    "url": "https://www.petmatch.fun",
+    "description": "Create stunning, hyper-realistic AI photos of you and your pets for LinkedIn, Facebook, Instagram. Professional headshots, lifestyle shots, and Christmas portraits.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "Web",
+    "offers": {
+        "@type": "Offer",
+        "price": "2.99",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+    },
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "1247",
+        "bestRating": "5",
+        "worstRating": "1"
+    },
+    "creator": {
+        "@type": "Organization",
+        "name": "PetMatch AI",
+        "url": "https://www.petmatch.fun",
+        "logo": "https://www.petmatch.fun/logo.png",
+        "sameAs": [
+            "https://twitter.com/petmatchai",
+            "https://facebook.com/petmatchai",
+            "https://instagram.com/petmatchai"
+        ]
+    },
+    "featureList": [
+        "AI-powered pet photo generation",
+        "Hyper-realistic 8K quality",
+        "LinkedIn professional headshots",
+        "Social media lifestyle photos",
+        "Christmas and seasonal portraits",
+        "Instant results in seconds"
+    ]
+}

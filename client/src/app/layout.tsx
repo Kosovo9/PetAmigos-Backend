@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import CosmicChristmasBackground from "@/components/CosmicChristmasBackground";
 import NanoBananaShield from "@/components/NanoBananaShield";
+import metadata from "./metadata";
+
+export { metadata };
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,11 +16,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-export const metadata: Metadata = {
-  title: "PetMatch AI Studio - Christmas Edition 🎄",
-  description: "Create hyper-realistic Christmas photos with AI. Santa, Elves, and Magic for your pets and family.",
-};
 
 export default function RootLayout({
   children,

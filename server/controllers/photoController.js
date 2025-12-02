@@ -131,134 +131,142 @@ exports.generatePhoto = async (req, res) => {
             const axios = require('axios');
             const response = await axios.get(result.imageUrl, { responseType: 'arraybuffer' });
             imageBuffer = Buffer.from(response.data);
-            const photo = new GeneratedPhoto({
-                userId,
-                watermarkedUrl,
-                cleanUrl,
-                prompt: JSON.stringify(options),
-                category: options.category,
-                scenario: options.scenario,
-                style: options.style,
-                engine: imageResult.engine,
-                quality: imageResult.quality,
-                isPaid: user.isPremium, // Premium users ya tienen acceso
-                expiresAt: user.isPremium ? null : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 días para free
-            });
+        }
 
-            await photo.save();
+        // 4. Generar ambas versiones (con y sin watermark)
+        const { watermarkedUrl, cleanUrl } = await generateBothVersions(imageBuffer, userId);
 
-            // 8. Usar crédito
+        // 5. Guardar en base de datos
+        const photo = new GeneratedPhoto({
+            userId,
+            watermarkedUrl,
+            cleanUrl,
+            prompt: JSON.stringify(options),
+            category: options.category,
+            scenario: options.scenario,
+            style: options.style,
+            engine: result.engine,
+            quality: result.quality,
+            isPaid: user.isPremium, // Premium users ya tienen acceso
+            expiresAt: user.isPremium ? null : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 días para free
+        });
+
+        await photo.save();
+
+        // 6. Usar crédito (skip en demo mode)
+        if (userId !== 'demo-user') {
             await user.useCredits(1);
-
-            // 9. Retornar resultado
-            res.status(200).json({
-                success: true,
-                photoId: photo._id,
-                imageUrl: user.isPremium ? cleanUrl : watermarkedUrl, // Premium ve versión limpia
-                hasWatermark: !user.isPremium,
-                engine: result.engine,
-                quality: result.quality,
-                creditsRemaining: user.credits,
-                expiresAt: photo.expiresAt,
-                message: user.isPremium ? null : '💎 Actualiza a Premium para remover la marca de agua'
-            });
-
-        } catch (error) {
-            console.error('Error en generatePhoto:', error);
-            res.status(500).json({ error: 'Error al generar foto' });
         }
-    };
 
-    // 📥 DESCARGAR FOTO
-    exports.downloadPhoto = async (req, res) => {
-        try {
-            const { photoId } = req.params;
-            const userId = req.userId;
+        // 7. Retornar resultado
+        res.status(200).json({
+            success: true,
+            photoId: photo._id,
+            imageUrl: user.isPremium ? cleanUrl : watermarkedUrl, // Premium ve versión limpia
+            hasWatermark: !user.isPremium,
+            engine: result.engine,
+            quality: result.quality,
+            creditsRemaining: user.credits,
+            expiresAt: photo.expiresAt,
+            message: user.isPremium ? null : '💎 Actualiza a Premium para remover la marca de agua'
+        });
 
-            const photo = await GeneratedPhoto.findById(photoId);
+    } catch (error) {
+        console.error('Error en generatePhoto:', error);
+        res.status(500).json({ error: 'Error al generar foto' });
+    }
+};
 
-            if (!photo) {
-                return res.status(404).json({ error: 'Foto no encontrada' });
-            }
+// 📥 DESCARGAR FOTO
+exports.downloadPhoto = async (req, res) => {
+    try {
+        const { photoId } = req.params;
+        const userId = req.userId;
 
-            // Verificar que sea del usuario
-            if (photo.userId.toString() !== userId) {
-                return res.status(403).json({ error: 'No autorizado' });
-            }
+        const photo = await GeneratedPhoto.findById(photoId);
 
-            const user = await User.findById(userId);
-            const downloadCheck = photo.canDownload(user);
+        if (!photo) {
+            return res.status(404).json({ error: 'Foto no encontrada' });
+        }
 
-            if (!downloadCheck.allowed) {
-                return res.status(402).json({
-                    error: downloadCheck.reason,
-                    photoId: photo._id,
-                    upsell: {
-                        message: 'Compra esta foto por $2.99 o actualiza a Premium',
-                        options: {
-                            singlePhoto: { price: 2.99, name: 'Comprar esta foto' },
-                            premium: { price: 14.99, name: 'Premium Mensual (ilimitado)' }
-                        }
+        // Verificar que sea del usuario
+        if (photo.userId.toString() !== userId) {
+            return res.status(403).json({ error: 'No autorizado' });
+        }
+
+        const user = await User.findById(userId);
+        const downloadCheck = photo.canDownload(user);
+
+        if (!downloadCheck.allowed) {
+            return res.status(402).json({
+                error: downloadCheck.reason,
+                photoId: photo._id,
+                upsell: {
+                    message: 'Compra esta foto por $2.99 o actualiza a Premium',
+                    options: {
+                        singlePhoto: { price: 2.99, name: 'Comprar esta foto' },
+                        premium: { price: 14.99, name: 'Premium Mensual (ilimitado)' }
                     }
-                });
-            }
-
-            // Actualizar contador de descargas
-            photo.downloadCount += 1;
-            photo.lastDownloadAt = new Date();
-            await photo.save();
-
-            // Retornar URL correcta
-            const downloadUrl = (user.isPremium || photo.isPaid) ? photo.cleanUrl : photo.watermarkedUrl;
-
-            res.status(200).json({
-                success: true,
-                downloadUrl,
-                hasWatermark: downloadCheck.watermarked || false,
-                message: downloadCheck.watermarked ? 'Versión con marca de agua. Paga para obtener versión limpia.' : 'Descarga lista'
+                }
             });
-
-        } catch (error) {
-            console.error('Error en downloadPhoto:', error);
-            res.status(500).json({ error: 'Error al descargar foto' });
         }
-    };
 
-    // 💳 COMPRAR FOTO INDIVIDUAL
-    exports.purchasePhoto = async (req, res) => {
-        try {
-            const { photoId } = req.params;
-            const { paymentMethod } = req.body; // 'stripe', 'paypal', etc
-            const userId = req.userId;
+        // Actualizar contador de descargas
+        photo.downloadCount += 1;
+        photo.lastDownloadAt = new Date();
+        await photo.save();
 
-            const photo = await GeneratedPhoto.findById(photoId);
+        // Retornar URL correcta
+        const downloadUrl = (user.isPremium || photo.isPaid) ? photo.cleanUrl : photo.watermarkedUrl;
 
-            if (!photo) {
-                return res.status(404).json({ error: 'Foto no encontrada' });
-            }
+        res.status(200).json({
+            success: true,
+            downloadUrl,
+            hasWatermark: downloadCheck.watermarked || false,
+            message: downloadCheck.watermarked ? 'Versión con marca de agua. Paga para obtener versión limpia.' : 'Descarga lista'
+        });
 
-            if (photo.userId.toString() !== userId) {
-                return res.status(403).json({ error: 'No autorizado' });
-            }
+    } catch (error) {
+        console.error('Error en downloadPhoto:', error);
+        res.status(500).json({ error: 'Error al descargar foto' });
+    }
+};
 
-            if (photo.isPaid) {
-                return res.status(400).json({ error: 'Foto ya comprada' });
-            }
+// 💳 COMPRAR FOTO INDIVIDUAL
+exports.purchasePhoto = async (req, res) => {
+    try {
+        const { photoId } = req.params;
+        const { paymentMethod } = req.body; // 'stripe', 'paypal', etc
+        const userId = req.userId;
 
-            // TODO: Procesar pago real con Stripe/PayPal
-            // Por ahora simulamos pago exitoso
+        const photo = await GeneratedPhoto.findById(photoId);
 
-            await photo.markAsPaid(2.99, paymentMethod);
-
-            res.status(200).json({
-                success: true,
-                message: '¡Foto comprada! Ya puedes descargar la versión sin marca de agua',
-                photoId: photo._id,
-                downloadUrl: photo.cleanUrl
-            });
-
-        } catch (error) {
-            console.error('Error en purchasePhoto:', error);
-            res.status(500).json({ error: 'Error al comprar foto' });
+        if (!photo) {
+            return res.status(404).json({ error: 'Foto no encontrada' });
         }
-    };
+
+        if (photo.userId.toString() !== userId) {
+            return res.status(403).json({ error: 'No autorizado' });
+        }
+
+        if (photo.isPaid) {
+            return res.status(400).json({ error: 'Foto ya comprada' });
+        }
+
+        // TODO: Procesar pago real con Stripe/PayPal
+        // Por ahora simulamos pago exitoso
+
+        await photo.markAsPaid(2.99, paymentMethod);
+
+        res.status(200).json({
+            success: true,
+            message: '¡Foto comprada! Ya puedes descargar la versión sin marca de agua',
+            photoId: photo._id,
+            downloadUrl: photo.cleanUrl
+        });
+
+    } catch (error) {
+        console.error('Error en purchasePhoto:', error);
+        res.status(500).json({ error: 'Error al comprar foto' });
+    }
+};

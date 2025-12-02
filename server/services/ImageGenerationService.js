@@ -198,13 +198,28 @@ class ImageGenerationService {
                 }
 
                 if (result && result.success) {
-                    error: 'No se pudo generar la imagen',
-                        details: lastError?.message || 'Unknown error',
-                            suggestion: 'Configura al menos una API key (GOOGLE_AI_API_KEY recomendado)',
-                                engine: 'none',
-                                    isPlaceholder: false
-                };
+                    console.log(`✅ Generación exitosa con ${engine}`);
+                    return result;
+                }
+
+            } catch (error) {
+                console.error(`❌ ${engine} falló:`, error.message);
+                lastError = error;
+                continue; // Intentar siguiente engine
             }
+        }
+
+        // Si todos fallaron, retornar error
+        console.error('❌ TODOS los engines fallaron');
+        return {
+            success: false,
+            error: 'No se pudo generar la imagen',
+            details: lastError ? lastError.message : 'Unknown error',
+            suggestion: 'Configura al menos una API key (GOOGLE_AI_API_KEY recomendado)',
+            engine: 'none',
+            isPlaceholder: false
+        };
+    }
 
     // 🎥 GENERAR VIDEO (SOLO PRO) - CON FALLBACK
     static async generateVideo(imageUrl, prompt) {

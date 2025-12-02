@@ -1,1 +1,40 @@
-﻿{ "General": { "greeting": "Hello! Placeholder for zh-CN." } }
+﻿{
+    "nav": {
+        "home": "首页",
+        "prompts": "提示词库",
+        "pricing": "价格",
+        "login": "登录",
+        "signup": "注册"
+    },
+    "prompts": {
+        "title": "超级提示词库",
+        "description": "LinkedIn、社交媒体等超逼真AI照片",
+        "categories": {
+            "all": "全部",
+            "linkedin": "LinkedIn",
+            "social": "社交媒体",
+            "seasonal": "季节性"
+        },
+        "search": "搜索提示词..."
+    },
+    "payment": {
+        "payButton": "支付$1并生成图片",
+        "generateButton": "生成10000x版本",
+        "processing": "正在处理付款...",
+        "generating": "正在生成您的图片...",
+        "success": "付款成功！",
+        "successMessage": "谢谢！您的积分已添加。",
+        "redirecting": "正在返回库...",
+        "cancelled": "付款已取消",
+        "cancelledMessage": "别担心，您没有被收费。",
+        "goBack": "返回",
+        "creditInfo": "将使用1个积分",
+        "securePayment": "通过Stripe安全支付"
+    },
+    "footer": {
+        "terms": "服务条款",
+        "privacy": "隐私政策",
+        "refunds": "退款政策",
+        "copyright": "版权所有。"
+    }
+}

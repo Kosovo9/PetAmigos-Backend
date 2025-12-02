@@ -1,1 +1,40 @@
-﻿{ "General": { "greeting": "Hello! Placeholder for ru-RU." } }
+﻿{
+    "nav": {
+        "home": "Главная",
+        "prompts": "Библиотека Промптов",
+        "pricing": "Цены",
+        "login": "Войти",
+        "signup": "Регистрация"
+    },
+    "prompts": {
+        "title": "Мега Библиотека Промптов",
+        "description": "Гиперреалистичные ИИ-фото для LinkedIn, соцсетей и не только",
+        "categories": {
+            "all": "Все",
+            "linkedin": "LinkedIn",
+            "social": "Соцсети",
+            "seasonal": "Сезонные"
+        },
+        "search": "Поиск промптов..."
+    },
+    "payment": {
+        "payButton": "Оплатить $1 и Создать Фото",
+        "generateButton": "Создать Версию 10000x",
+        "processing": "Обработка платежа...",
+        "generating": "Создание вашего фото...",
+        "success": "Оплата Успешна!",
+        "successMessage": "Спасибо! Ваш кредит добавлен.",
+        "redirecting": "Возвращение в библиотеку...",
+        "cancelled": "Оплата Отменена",
+        "cancelledMessage": "Не волнуйтесь, средства не списаны.",
+        "goBack": "Назад",
+        "creditInfo": "Будет использован 1 кредит",
+        "securePayment": "Безопасная оплата через Stripe"
+    },
+    "footer": {
+        "terms": "Условия использования",
+        "privacy": "Политика конфиденциальности",
+        "refunds": "Политика возврата",
+        "copyright": "Все права защищены."
+    }
+}

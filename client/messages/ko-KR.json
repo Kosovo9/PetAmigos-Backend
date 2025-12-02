@@ -1,1 +1,40 @@
-﻿{ "General": { "greeting": "Hello! Placeholder for ko-KR." } }
+﻿{
+    "nav": {
+        "home": "홈",
+        "prompts": "프롬프트 라이브러리",
+        "pricing": "가격",
+        "login": "로그인",
+        "signup": "회원가입"
+    },
+    "prompts": {
+        "title": "메가 프롬프트 라이브러리",
+        "description": "LinkedIn, 소셜 미디어 등을 위한 초현실적 AI 사진",
+        "categories": {
+            "all": "전체",
+            "linkedin": "LinkedIn",
+            "social": "소셜 미디어",
+            "seasonal": "시즌"
+        },
+        "search": "프롬프트 검색..."
+    },
+    "payment": {
+        "payButton": "$1 결제 및 이미지 생성",
+        "generateButton": "10000x 버전 생성",
+        "processing": "결제 처리 중...",
+        "generating": "이미지 생성 중...",
+        "success": "결제 성공!",
+        "successMessage": "감사합니다! 크레딧이 추가되었습니다.",
+        "redirecting": "라이브러리로 돌아가는 중...",
+        "cancelled": "결제 취소됨",
+        "cancelledMessage": "걱정하지 마세요. 청구되지 않았습니다.",
+        "goBack": "뒤로 가기",
+        "creditInfo": "1 크레딧이 사용됩니다",
+        "securePayment": "Stripe를 통한 안전한 결제"
+    },
+    "footer": {
+        "terms": "이용 약관",
+        "privacy": "개인정보 처리방침",
+        "refunds": "환불 정책",
+        "copyright": "모든 권리 보유."
+    }
+}

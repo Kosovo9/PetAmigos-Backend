@@ -1,1 +1,40 @@
-﻿{ "General": { "greeting": "Hello! Placeholder for it-IT." } }
+﻿{
+    "nav": {
+        "home": "Home",
+        "prompts": "Libreria Prompt",
+        "pricing": "Prezzi",
+        "login": "Accedi",
+        "signup": "Registrati"
+    },
+    "prompts": {
+        "title": "Mega Libreria Prompt",
+        "description": "Foto iper-realistiche AI per LinkedIn, Social Media e Altro",
+        "categories": {
+            "all": "Tutti",
+            "linkedin": "LinkedIn",
+            "social": "Social Media",
+            "seasonal": "Stagionale"
+        },
+        "search": "Cerca prompt..."
+    },
+    "payment": {
+        "payButton": "Paga $1 e Genera Immagine",
+        "generateButton": "Genera Versione 10000x",
+        "processing": "Elaborazione pagamento...",
+        "generating": "Generazione immagine...",
+        "success": "Pagamento Riuscito!",
+        "successMessage": "Grazie! Il tuo credito è stato aggiunto.",
+        "redirecting": "Reindirizzamento alla libreria...",
+        "cancelled": "Pagamento Annullato",
+        "cancelledMessage": "Non preoccuparti, non ti è stato addebitato nulla.",
+        "goBack": "Indietro",
+        "creditInfo": "Verrà utilizzato 1 Credito",
+        "securePayment": "Pagamento sicuro tramite Stripe"
+    },
+    "footer": {
+        "terms": "Termini di Servizio",
+        "privacy": "Informativa sulla Privacy",
+        "refunds": "Politica di Rimborso",
+        "copyright": "Tutti i diritti riservati."
+    }
+}

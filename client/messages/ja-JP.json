@@ -1,1 +1,40 @@
-﻿{ "General": { "greeting": "Hello! Placeholder for ja-JP." } }
+﻿{
+    "nav": {
+        "home": "ホーム",
+        "prompts": "プロンプトライブラリ",
+        "pricing": "料金",
+        "login": "ログイン",
+        "signup": "登録"
+    },
+    "prompts": {
+        "title": "メガプロンプトライブラリ",
+        "description": "LinkedIn、SNSなどのための超リアルなAI写真",
+        "categories": {
+            "all": "すべて",
+            "linkedin": "LinkedIn",
+            "social": "ソーシャルメディア",
+            "seasonal": "季節"
+        },
+        "search": "プロンプトを検索..."
+    },
+    "payment": {
+        "payButton": "$1支払って画像生成",
+        "generateButton": "10000xバージョン生成",
+        "processing": "支払い処理中...",
+        "generating": "画像を生成中...",
+        "success": "支払い成功！",
+        "successMessage": "ありがとうございます！クレジットが追加されました。",
+        "redirecting": "ライブラリに戻ります...",
+        "cancelled": "支払いキャンセル",
+        "cancelledMessage": "ご心配なく、課金されていません。",
+        "goBack": "戻る",
+        "creditInfo": "1クレジットが使用されます",
+        "securePayment": "Stripeによる安全な支払い"
+    },
+    "footer": {
+        "terms": "利用規約",
+        "privacy": "プライバシーポリシー",
+        "refunds": "返金ポリシー",
+        "copyright": "全著作権所有。"
+    }
+}

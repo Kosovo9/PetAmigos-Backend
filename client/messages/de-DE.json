@@ -1,1 +1,40 @@
-﻿{ "General": { "greeting": "Hello! Placeholder for de-DE." } }
+﻿{
+    "nav": {
+        "home": "Startseite",
+        "prompts": "Prompt-Bibliothek",
+        "pricing": "Preise",
+        "login": "Anmelden",
+        "signup": "Registrieren"
+    },
+    "prompts": {
+        "title": "Mega Prompt-Bibliothek",
+        "description": "Hyperrealistische KI-Fotos für LinkedIn, Soziale Medien und Mehr",
+        "categories": {
+            "all": "Alle",
+            "linkedin": "LinkedIn",
+            "social": "Soziale Medien",
+            "seasonal": "Saisonal"
+        },
+        "search": "Prompts suchen..."
+    },
+    "payment": {
+        "payButton": "$1 Bezahlen & Bild Generieren",
+        "generateButton": "10000x Version Generieren",
+        "processing": "Zahlung wird verarbeitet...",
+        "generating": "Ihr Bild wird generiert...",
+        "success": "Zahlung Erfolgreich!",
+        "successMessage": "Vielen Dank! Ihr Guthaben wurde hinzugefügt.",
+        "redirecting": "Zurück zur Bibliothek...",
+        "cancelled": "Zahlung Abgebrochen",
+        "cancelledMessage": "Keine Sorge, es wurde nichts berechnet.",
+        "goBack": "Zurück",
+        "creditInfo": "1 Guthaben wird verwendet",
+        "securePayment": "Sichere Zahlung über Stripe"
+    },
+    "footer": {
+        "terms": "Nutzungsbedingungen",
+        "privacy": "Datenschutzrichtlinie",
+        "refunds": "Rückerstattungsrichtlinie",
+        "copyright": "Alle Rechte vorbehalten."
+    }
+}

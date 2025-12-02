@@ -6,7 +6,7 @@ export default function Footer() {
         <footer className="bg-black/90 text-white/40 py-8 border-t border-white/10 mt-20">
             <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="text-sm">
-                    © {new Date().getFullYear()} PetMatch.Fun. All rights reserved.
+                    © {new Date().getFullYear()} PetMatch.Fun. All rights reserved. <span className="opacity-20 ml-2">v2.0-NO-BANNER</span>
                 </div>
                 <div className="flex gap-6 text-sm">
                     <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>

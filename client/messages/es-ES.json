@@ -1,1 +1,40 @@
-﻿{ "General": { "greeting": "Hello! Placeholder for es-ES." } }
+﻿{
+    "nav": {
+        "home": "Inicio",
+        "prompts": "Biblioteca de Prompts",
+        "pricing": "Precios",
+        "login": "Iniciar Sesión",
+        "signup": "Registrarse"
+    },
+    "prompts": {
+        "title": "Mega Biblioteca de Prompts",
+        "description": "Fotos hiper-realistas con IA para LinkedIn, Redes Sociales y Más",
+        "categories": {
+            "all": "Todos",
+            "linkedin": "LinkedIn",
+            "social": "Redes Sociales",
+            "seasonal": "Temporada"
+        },
+        "search": "Buscar prompts..."
+    },
+    "payment": {
+        "payButton": "Pagar $1 y Generar Imagen",
+        "generateButton": "Generar Versión 10000x",
+        "processing": "Procesando pago...",
+        "generating": "Generando tu imagen...",
+        "success": "¡Pago Exitoso!",
+        "successMessage": "¡Gracias! Tu crédito ha sido añadido.",
+        "redirecting": "Redirigiendo de vuelta a la biblioteca...",
+        "cancelled": "Pago Cancelado",
+        "cancelledMessage": "No te preocupes, no se te ha cobrado.",
+        "goBack": "Volver",
+        "creditInfo": "Se usará 1 Crédito",
+        "securePayment": "Pago seguro vía Stripe"
+    },
+    "footer": {
+        "terms": "Términos de Servicio",
+        "privacy": "Política de Privacidad",
+        "refunds": "Política de Reembolsos",
+        "copyright": "Todos los derechos reservados."
+    }
+}

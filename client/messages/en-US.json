@@ -1,1 +1,40 @@
-﻿{ "General": { "greeting": "Hello! Placeholder for en-US." } }
+﻿{
+    "nav": {
+        "home": "Home",
+        "prompts": "Prompt Library",
+        "pricing": "Pricing",
+        "login": "Login",
+        "signup": "Sign Up"
+    },
+    "prompts": {
+        "title": "Mega Prompt Library",
+        "description": "Hyper-realistic AI photos for LinkedIn, Social Media & More",
+        "categories": {
+            "all": "All",
+            "linkedin": "LinkedIn",
+            "social": "Social Media",
+            "seasonal": "Seasonal"
+        },
+        "search": "Search prompts..."
+    },
+    "payment": {
+        "payButton": "Pay $1 & Generate Image",
+        "generateButton": "Generate 10000x Version",
+        "processing": "Processing payment...",
+        "generating": "Generating your image...",
+        "success": "Payment Successful!",
+        "successMessage": "Thank you! Your credit has been added.",
+        "redirecting": "Redirecting back to the vault...",
+        "cancelled": "Payment Cancelled",
+        "cancelledMessage": "No worries, you haven't been charged.",
+        "goBack": "Go Back",
+        "creditInfo": "1 Credit will be used",
+        "securePayment": "Secure payment via Stripe"
+    },
+    "footer": {
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy",
+        "refunds": "Refund Policy",
+        "copyright": "All rights reserved."
+    }
+}

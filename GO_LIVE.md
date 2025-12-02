@@ -210,3 +210,4 @@ Una vez que el backend esté desplegado y funcionando:
 **Última actualización**: Enero 2025  
 **Estado**: 🟡 Pendiente de deploy en Render
 
+

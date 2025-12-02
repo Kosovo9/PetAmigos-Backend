@@ -344,3 +344,4 @@ Home → Memory Lane → Ver Recuerdos → Compartir / Desbloquear HD
 **Nota**: Estos son previews conceptuales. En la app real, los componentes tendrán animaciones, transiciones suaves y gestos táctiles para una experiencia premium.
 
 
+

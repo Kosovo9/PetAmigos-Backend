@@ -45,3 +45,4 @@ DataLicenseLogSchema.index({ dataType: 1, timestamp: -1 });
 module.exports = mongoose.model('DataLicenseLog', DataLicenseLogSchema);
 
 
+

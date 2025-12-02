@@ -35,3 +35,4 @@ VoteSchema.index({ userId: 1, proposalId: 1 }, { unique: true });
 module.exports = mongoose.model('Vote', VoteSchema);
 
 
+

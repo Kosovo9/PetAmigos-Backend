@@ -181,3 +181,4 @@ curl https://petamigos-world.vercel.app
 **Próximo Paso**: Ejecutar deployment en Render y Vercel para obtener URLs reales
 
 
+

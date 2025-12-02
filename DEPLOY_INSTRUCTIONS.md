@@ -176,3 +176,4 @@ curl https://tu-backend.onrender.com/health
 
 **¿Listo para empezar?** Ejecuta los comandos del Paso 1 y avísame cuando termines. 🔥
 
+

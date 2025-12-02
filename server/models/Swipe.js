@@ -13,3 +13,4 @@ SwipeSchema.index({ swiperPetId: 1, swipedPetId: 1, action: 1 });
 module.exports = mongoose.model('Swipe', SwipeSchema);
 
 
+

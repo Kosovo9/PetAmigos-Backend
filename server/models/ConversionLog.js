@@ -37,3 +37,4 @@ ConversionLogSchema.index({ testId: 1, variant: 1, timestamp: -1 });
 module.exports = mongoose.model('ConversionLog', ConversionLogSchema);
 
 
+

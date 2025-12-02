@@ -163,3 +163,4 @@ exports.callGoogleAIAPI = async (prompt, style, resolution = '1K') => {
 };
 
 
+

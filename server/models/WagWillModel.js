@@ -63,3 +63,4 @@ const WagWillModelSchema = new mongoose.Schema({
 module.exports = mongoose.model('WagWillModel', WagWillModelSchema);
 
 
+

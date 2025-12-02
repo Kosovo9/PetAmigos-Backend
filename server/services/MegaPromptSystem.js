@@ -1,168 +1,140 @@
-// MEGA PROMPT SYSTEM - NIVEL DIOS
-// Sistema quirúrgico de prompts para máxima calidad
+/**
+ * 🧠 MEGA PROMPT SYSTEM - 10000x REALISM ENGINE
+ * The "Brain" that turns simple user ideas into masterpiece prompts.
+ */
 
-const PROMPT_TEMPLATES = {
-    // CHRISTMAS EDITION
-    christmas: {
-        base: "Professional pet photography, Christmas theme, ultra-realistic 8K resolution, studio lighting setup, National Geographic quality, cinematic composition, volumetric lighting, hyper-detailed fur texture with individual hair strands visible, bokeh background with Christmas lights, festive decorations, warm color grading, shot on Sony A7R IV with 85mm f/1.4 lens, shallow depth of field",
+class MegaPromptSystem {
+    constructor() {
+        // 🎨 1. BASE STYLES (The "Vibe")
+        this.styles = {
+            'photorealistic': 'Ultra-realistic 8K photography, highly detailed, photorealistic, shot on Canon EOS R5, 85mm f/1.2 lens, sharp focus, cinematic lighting, hyper-detailed textures',
+            'cinematic': 'Cinematic movie scene, IMAX quality, dramatic lighting, color graded, anamorphic lens flares, depth of field, blockbuster movie aesthetic',
+            'fantasy': 'Magical fantasy art, ethereal atmosphere, glowing particles, dreamy lighting, soft focus, intricate details, masterpiece, trending on ArtStation',
+            'studio': 'Professional studio photography, solid background, 3-point lighting, rim light, high contrast, commercial quality, sharp details'
+        };
 
-        scenarios: {
-            santa: "Pet wearing authentic Santa Claus hat, sitting regally by professionally decorated Christmas tree with twinkling lights, cozy fireplace with real flames in soft-focus background, warm golden hour lighting streaming through window, luxurious home interior, magazine-quality composition",
+        // 🌟 2. GENERATION MODES (The "Double Barrel" Strategy)
+        this.modes = {
+            // OPTION B (Default): The "Hollywood" Look - High Sales Conversion
+            'HOLLYWOOD_GLAM': `
+                Flawless skin texture, soft flattering lighting, beauty dish illumination, 
+                perfect complexion, cinematic color grading, magazine cover aesthetic, 
+                slight airbrush effect, glowing skin, vibrant eyes, perfect hair styling, 
+                heroic pose, confident expression, Vogue editorial style.
+                Negative prompt: wrinkles, blemishes, scars, acne, dull skin, harsh shadows.
+            `,
 
-            sweater: "Pet modeling premium Christmas sweater with intricate knit patterns, gentle snow falling in background creating magical atmosphere, winter wonderland scene with frosted trees, professional fashion photography style, dramatic rim lighting, bokeh lights creating dreamy effect",
+            // OPTION A (Upsell): The "Raw Masterpiece" - Artistic Detail
+            'RAW_MASTERPIECE': `
+                Hyper-realistic skin texture with visible pores, micro-details, 
+                authentic imperfections, raw unedited photography style, 
+                National Geographic aesthetic, sharp harsh details, 
+                complex lighting, rugged texture, extreme definition, 
+                documentary style realism, 100% authentic look.
+                Negative prompt: plastic skin, blur, airbrushed, cartoonish, makeup.
+            `
+        };
 
-            presents: "Pet surrounded by elegantly wrapped Christmas presents with silk ribbons, professional studio setup with seamless white background, commercial product photography lighting, ultra-sharp focus on pet's expressive eyes, soft shadows, catalog-quality image",
+        // 💡 3. LIGHTING PRESETS (The "Mood")
+        this.lighting = {
+            'dawn': 'Soft morning golden hour light, warm hues, long shadows, volumetric sun rays breaking through, atmospheric haze, serene morning mood',
+            'noon': 'Bright natural daylight, high contrast, vivid colors, clear blue sky, sharp shadows, energetic atmosphere',
+            'sunset': 'Dramatic sunset lighting, purple and orange sky, silhouette effects, warm rim lighting, romantic atmosphere',
+            'night': 'City night lights, bokeh background, neon reflections, moody atmosphere, low key lighting, high ISO grain',
+            'studio_dark': 'Dramatic chiaroscuro lighting, deep shadows, rembrandt lighting, moody and elegant',
+            'studio_light': 'High key lighting, softbox illumination, bright and airy, clean look'
+        };
 
-            family: "Pet with family members in matching Christmas pajamas, cozy living room with decorated tree, candid moment captured with professional timing, warm ambient lighting, lifestyle photography style, emotional connection visible, Life magazine quality"
-        },
-
-        styles: {
-            professional: ", professional studio portrait, commercial photography quality, perfect exposure, color-corrected, retouched",
-            artistic: ", artistic interpretation, painterly quality, fine art photography, museum-worthy composition",
-            candid: ", candid lifestyle shot, authentic moment, photojournalism style, natural expressions captured",
-            glamour: ", glamour photography, high-fashion editorial style, dramatic lighting, Vogue-quality composition"
-        }
-    },
-
-    // PROFESSIONAL YEAR-ROUND
-    professional: {
-        portrait: {
-            base: "Professional pet portrait photography, ultra-sharp focus on eyes, hyper-realistic fur detail showing individual hairs, 8K resolution, shallow depth of field (f/1.4), clean neutral background, commercial photography quality, perfect studio lighting with softbox and rim light, color-graded, professionally retouched",
-
-            moods: {
-                regal: ", dignified pose, noble expression, royal portrait style, museum-quality",
-                playful: ", joyful expression, dynamic energy, captured mid-action, Sports Illustrated quality",
-                serene: ", calm demeanor, peaceful atmosphere, zen-like composition, fine art quality",
-                heroic: ", powerful stance, dramatic lighting, epic composition, movie poster style"
-            }
-        },
-
-        action: {
-            base: "Dynamic pet action photography, frozen motion at 1/8000s shutter speed, professional sports photography style, dramatic lighting, ultra-detailed, National Geographic wildlife quality, 8K resolution, perfect timing, award-winning composition",
-
-            activities: {
-                running: ", mid-stride with all paws off ground, motion blur in background, speed lines effect",
-                jumping: ", suspended in mid-air, perfect form, dynamic composition, gravity-defying",
-                playing: ", catching toy/ball, intense focus, athletic prowess visible, decisive moment",
-                swimming: ", water droplets frozen in air, splash dynamics, underwater visibility"
-            }
-        },
-
-        lifestyle: {
-            base: "Lifestyle pet photography, authentic candid moment, natural lighting, photojournalism style, emotional storytelling, Life magazine quality, genuine expressions, perfect timing",
-
-            settings: {
-                home: ", cozy home environment, comfortable furniture, warm ambient light, family atmosphere",
-                outdoor: ", natural outdoor setting, golden hour lighting, scenic background, adventure theme",
-                urban: ", city environment, modern architecture, street photography style, contemporary feel",
-                beach: ", beach setting, sunset lighting, ocean background, vacation vibes, carefree mood"
-            }
-        }
-    },
-
-    // SPECIAL OCCASIONS
-    occasions: {
-        birthday: "Pet celebrating birthday, festive party hat, birthday cake with candles, colorful balloons, joyful celebration atmosphere, professional event photography, warm lighting, candid happiness",
-
-        valentine: "Pet with Valentine's Day theme, romantic setting, soft pink and red tones, heart decorations, love-themed props, romantic portrait photography, dreamy bokeh",
-
-        halloween: "Pet in creative Halloween costume, spooky but cute atmosphere, autumn colors, professional costume photography, dramatic lighting with shadows, festive decorations",
-
-        graduation: "Pet in miniature graduation cap and gown, diploma prop, proud achievement theme, formal portrait style, academic setting, professional school photography",
-
-        wedding: "Pet as part of wedding celebration, elegant attire, romantic setting, wedding photography style, soft romantic lighting, special moment captured"
-    },
-
-    // TECHNICAL MODIFIERS (Always append)
-    technical: {
-        quality: ", shot on professional camera (Sony A7R IV / Canon R5), prime lens (85mm f/1.4 / 50mm f/1.2), RAW format, professionally color-graded, expertly retouched, print-ready quality",
-
-        lighting: ", professional 3-point lighting setup, key light with softbox, fill light for shadow detail, rim light for separation, perfectly exposed, no clipping in highlights or shadows",
-
-        detail: ", hyper-realistic detail, individual fur strands visible, whisker detail, eye catchlights, texture detail in nose leather, paw pad detail, ultra-sharp focus where needed",
-
-        postProcessing: ", professionally edited, color-corrected, contrast optimized, sharpened appropriately, noise reduced, vignette added subtly, final polish applied"
-    }
-};
-
-// NEGATIVE PROMPTS (What to avoid)
-const NEGATIVE_PROMPTS = {
-    common: "blurry, out of focus, low quality, low resolution, pixelated, jpeg artifacts, watermark, text, signature, amateur, phone camera, poor lighting, overexposed, underexposed, noisy, grainy, distorted, deformed, ugly, bad anatomy, extra limbs, missing limbs, floating limbs, disconnected limbs, mutation, mutated, disfigured, cartoon, anime, illustration, painting, drawing, art, sketch",
-
-    pet_specific: "extra tails, extra ears, extra legs, missing tail, missing ears, deformed face, asymmetrical eyes, wrong number of paws, unnatural proportions, human hands, human feet"
-};
-
-// PROMPT BUILDER FUNCTION
-function buildMegaPrompt(options) {
-    const {
-        category = 'christmas',      // christmas, professional, occasions
-        scenario = 'santa',           // specific scenario
-        style = 'professional',       // artistic style
-        mood = 'regal',              // emotional tone
-        petType = 'dog',             // dog, cat, etc.
-        petBreed = '',               // specific breed
-        customDetails = ''           // user additions
-    } = options;
-
-    let prompt = '';
-    let negativePrompt = NEGATIVE_PROMPTS.common + ', ' + NEGATIVE_PROMPTS.pet_specific;
-
-    // Build base prompt
-    if (category === 'christmas') {
-        prompt = PROMPT_TEMPLATES.christmas.base;
-        if (PROMPT_TEMPLATES.christmas.scenarios[scenario]) {
-            prompt += ', ' + PROMPT_TEMPLATES.christmas.scenarios[scenario];
-        }
-        if (PROMPT_TEMPLATES.christmas.styles[style]) {
-            prompt += PROMPT_TEMPLATES.christmas.styles[style];
-        }
-    } else if (category === 'professional') {
-        const subCategory = scenario; // portrait, action, lifestyle
-        if (PROMPT_TEMPLATES.professional[subCategory]) {
-            prompt = PROMPT_TEMPLATES.professional[subCategory].base;
-            if (mood && PROMPT_TEMPLATES.professional[subCategory].moods) {
-                prompt += PROMPT_TEMPLATES.professional[subCategory].moods[mood];
-            }
-        }
-    } else if (category === 'occasions') {
-        prompt = PROMPT_TEMPLATES.occasions[scenario] || PROMPT_TEMPLATES.occasions.birthday;
+        // 📸 4. CAMERA ANGLES (The "Perspective")
+        this.cameras = {
+            'portrait': '85mm portrait lens, f/1.8 aperture, bokeh background, focus on eyes',
+            'wide': '24mm wide angle lens, capturing full scene, f/8 aperture, deep depth of field',
+            'macro': '100mm macro lens, extreme close-up, visible pores and fur texture, f/2.8',
+            'drone': 'Aerial drone shot, top-down view, wide landscape perspective'
+        };
     }
 
-    // Add pet-specific details
-    if (petType && petBreed) {
-        prompt = `${petBreed} ${petType}, ` + prompt;
-    } else if (petType) {
-        prompt = `${petType}, ` + prompt;
+    /**
+     * 🚀 MAIN FUNCTION: GENERATE THE MEGA PROMPT
+     * @param {Object} input - The simple user inputs
+     */
+    generate(input) {
+        const {
+            subjects = [],
+            scenario = 'paris cafe',
+            timeOfDay = 'dawn',
+            vibe = 'photorealistic',
+            groupDynamics = 'friends',
+            mode = 'HOLLYWOOD_GLAM' // Default to the "Seller"
+        } = input;
+
+        // 1. CONSTRUCT SUBJECTS (The "Cast")
+        const subjectText = this._buildSubjects(subjects, groupDynamics, mode);
+
+        // 2. ENHANCE SCENARIO (The "Set")
+        const scenarioText = this._enhanceScenario(scenario, timeOfDay);
+
+        // 3. APPLY TECHNICAL SPECS (The "Gear")
+        const technicalText = this.styles[vibe] || this.styles['photorealistic'];
+        const lightingText = this.lighting[timeOfDay] || this.lighting['dawn'];
+        const modeText = this.modes[mode] || this.modes['HOLLYWOOD_GLAM'];
+
+        // 4. ASSEMBLE THE MASTERPIECE
+        const megaPrompt = `
+            ${technicalText}. 
+            ${subjectText}. 
+            ${scenarioText}. 
+            ${lightingText}. 
+            ${modeText}
+            Ultra-detailed, 8K resolution, unreal engine 5 render style, 
+            perfect composition, rule of thirds, color graded, 
+            no artifacts, perfect eyes, perfect hands, 
+            masterpiece, award winning photography.
+        `.replace(/\s+/g, ' ').trim();
+
+        return megaPrompt;
     }
 
-    // Add custom user details
-    if (customDetails) {
-        prompt += ', ' + customDetails;
-    }
+    // 🧩 HELPER: Build the subjects string
+    _buildSubjects(subjects, dynamic, mode) {
+        if (!subjects.length) return "A beautiful scene";
 
-    // Add technical modifiers
-    prompt += PROMPT_TEMPLATES.technical.quality;
-    prompt += PROMPT_TEMPLATES.technical.lighting;
-    prompt += PROMPT_TEMPLATES.technical.detail;
-    prompt += PROMPT_TEMPLATES.technical.postProcessing;
+        let description = "";
+        const count = subjects.length;
+        const people = subjects.filter(s => s.type === 'human');
+        const pets = subjects.filter(s => s.type === 'pet');
 
-    return {
-        prompt,
-        negativePrompt,
-        settings: {
-            steps: 50,                    // High quality = more steps
-            cfg_scale: 7.5,              // Creativity vs accuracy balance
-            width: 1024,                 // Base resolution
-            height: 1024,
-            sampler: 'DPM++ 2M Karras',  // Best quality sampler
-            seed: -1                     // Random
+        // Adjust description based on mode
+        const humanDetail = mode === 'HOLLYWOOD_GLAM'
+            ? "perfect skin and radiant appearance"
+            : "highly detailed skin texture and authentic features";
+
+        if (count === 1) {
+            description = `A stunning portrait of a ${subjects[0].description}`;
+        } else {
+            description = `A group of ${people.length} people and ${pets.length} pets, representing a ${dynamic}, interacting naturally. `;
+
+            const details = subjects.map(s => {
+                return s.type === 'human'
+                    ? `a ${s.description} with ${humanDetail}`
+                    : `a hyper-realistic ${s.description} with detailed fur texture`;
+            }).join(', and ');
+
+            description += `Featuring ${details}.`;
         }
-    };
+
+        return description + " They are positioned naturally in the scene, showing genuine emotion and connection.";
+    }
+
+    // 🧩 HELPER: Enhance the scenario
+    _enhanceScenario(scenario, time) {
+        return `
+            Located in ${scenario}. 
+            The background is filled with intricate details relevant to the location. 
+            The architecture and environment are perfectly rendered. 
+            Atmospheric depth adds realism to the scene.
+        `;
+    }
 }
 
-// EXPORT
-module.exports = {
-    PROMPT_TEMPLATES,
-    NEGATIVE_PROMPTS,
-    buildMegaPrompt
-};
+module.exports = new MegaPromptSystem();

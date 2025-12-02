@@ -40,3 +40,4 @@ MemorySchema.index({ ownerId: 1, status: 1 });
 module.exports = mongoose.model('Memory', MemorySchema);
 
 
+

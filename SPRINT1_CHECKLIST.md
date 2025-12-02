@@ -167,3 +167,4 @@ Backend desplegado y listo para procesar pago de Membresía Lifetime y recibir d
 **Estado**: ✅ Código completo - Pendiente despliegue en Render
 
 
+

@@ -237,3 +237,4 @@ if (isPremium && resolution === '4K_MAX') {
 **Última actualización**: Noviembre 2024
 
 
+

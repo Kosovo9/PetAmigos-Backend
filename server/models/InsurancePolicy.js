@@ -93,3 +93,4 @@ InsurancePolicySchema.index({ status: 1, expirationDate: 1 });
 module.exports = mongoose.model('InsurancePolicy', InsurancePolicySchema);
 
 
+

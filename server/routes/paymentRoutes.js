@@ -4,14 +4,14 @@ const router = express.Router();
 
 const auth = require('../middleware/auth');
 
-const { processLifetimeMembership, handlePaymentWebhook } = require('../controllers/paymentController');
-
-
+const { processLifetimeMembership, handlePaymentWebhook, createCheckoutSession } = require('../controllers/paymentController');
 
 // 🔒 Rutas protegidas: requieren autenticación
 
-// Endpoint principal para Pasaporte de Longevidad (Cash Harvest 10X)
+// Endpoint para pago (Dinámico: $1 o Producción)
+router.post('/create-checkout', auth, createCheckoutSession);
 
+// Endpoint principal para Pasaporte de Longevidad (Cash Harvest 10X)
 router.post('/lifetime-membership', auth, processLifetimeMembership);
 
 

@@ -21,3 +21,4 @@ router.post('/accept-legal', auth, acceptLegalClause);
 module.exports = router;
 
 
+

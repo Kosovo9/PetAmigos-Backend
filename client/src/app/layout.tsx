@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import CosmicChristmasBackground from "@/components/CosmicChristmasBackground";
-import CountdownOverlay from "@/components/CountdownOverlay";
 import NanoBananaShield from "@/components/NanoBananaShield";
 
 const geistSans = Geist({
@@ -31,7 +30,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
       >
         <CosmicChristmasBackground />
-        <CountdownOverlay />
         <NanoBananaShield />
         <div className="relative z-10">
           {children}

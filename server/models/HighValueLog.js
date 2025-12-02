@@ -39,3 +39,4 @@ HighValueLogSchema.index({ service: 1, value: -1 });
 module.exports = mongoose.model('HighValueLog', HighValueLogSchema);
 
 
+

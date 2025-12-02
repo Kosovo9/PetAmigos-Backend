@@ -93,18 +93,18 @@ function detectRegion(currency, req) {
     if (['ARS', 'BRL', 'MXN', 'CLP', 'COP'].includes(currency)) {
         return 'LATAM';
     }
-    
+
     // Por IP (si está disponible)
     const country = req.headers['cf-ipcountry'] || req.headers['x-country-code'];
     if (['AR', 'BR', 'MX', 'CL', 'CO'].includes(country)) {
         return 'LATAM';
     }
-    
+
     // Por defecto: Global (Lemon Squeezy) o US (Stripe)
     if (currency === 'USD' && !country) {
         return 'US';
     }
-    
+
     return 'GLOBAL';
 }
 
@@ -151,7 +151,7 @@ async function processStripe(amount, currency, paymentMethod) {
 async function processMercadoPago(amount, currency, paymentMethod) {
     try {
         const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
-        
+
         const response = await axios.post('https://api.mercadopago.com/checkout/preferences', {
             items: [{
                 title: "PetAmigos World - Lifetime Membership",
@@ -254,28 +254,122 @@ async function processLemonSqueezy(amount, currency, paymentMethod) {
 }
 
 /**
+ * Crear Checkout Session (Dinámico: $1 Test o Producción)
+ */
+exports.createCheckoutSession = async (req, res) => {
+    try {
+        const { action, priceId, type } = req.body; // type: 'credit', 'lifetime', 'pack'
+        const userId = req.userId;
+
+        // 🎛️ CONFIGURACIÓN DE LANZAMIENTO
+        // Si LAUNCH_MODE es 'TEST_DOLLAR', forzamos todo a $1 USD
+        const isTestMode = process.env.LAUNCH_MODE === 'TEST_DOLLAR';
+
+        let finalPriceData = {};
+        let metadata = {
+            userId: userId,
+            action: action || 'generation',
+            type: type || 'ONE_DOLLAR_CREDIT'
+        };
+
+        if (isTestMode) {
+            // 🧪 MODO PRUEBA: Todo cuesta $1
+            finalPriceData = {
+                currency: 'usd',
+                product_data: {
+                    name: `TEST MODE: ${type || 'Credit'}`,
+                    description: 'Test Transaction ($1.00)'
+                },
+                unit_amount: 100 // $1.00 USD
+            };
+        } else {
+            // 🚀 MODO PRODUCCIÓN (Precios Reales)
+            if (type === 'lifetime') {
+                finalPriceData = {
+                    currency: 'usd',
+                    product_data: { name: "PetMatch Founder Lifetime", description: "Acceso de por vida + Beneficios VIP" },
+                    unit_amount: 9700 // $97.00 USD
+                };
+            } else if (type === 'pack_starter') {
+                finalPriceData = {
+                    currency: 'usd',
+                    product_data: { name: "Starter Pack (50 Credits)", description: "Paquete de inicio" },
+                    unit_amount: 1900 // $19.00 USD
+                };
+            } else {
+                // Default Single Credit
+                finalPriceData = {
+                    currency: 'usd',
+                    product_data: { name: "Single Credit", description: "1 Credit for Image Generation" },
+                    unit_amount: 299 // $2.99 USD (Precio normal unitario)
+                };
+            }
+        }
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [{
+                price_data: finalPriceData,
+                quantity: 1
+            }],
+            mode: 'payment',
+            metadata: metadata,
+            success_url: `${process.env.CLIENT_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.CLIENT_URL}/payment/cancel`
+        });
+
+        // Registrar transacción pendiente
+        await Transaction.create({
+            user: userId,
+            stripeSessionId: session.id,
+            amount: finalPriceData.unit_amount / 100,
+            status: 'pending',
+            action: action || type || 'generation',
+            isTestMode: isTestMode
+        });
+
+        res.json({ url: session.url });
+    } catch (error) {
+        console.error('Error creating checkout:', error);
+        res.status(500).json({ error: 'Error initiating payment' });
+    }
+};
+
+/**
  * Webhook para procesar confirmaciones de pago
  */
 exports.handlePaymentWebhook = async (req, res) => {
     try {
-        const { processor, event, data } = req.body;
+        const sig = req.headers['stripe-signature'];
+        let event;
 
-        if (processor === 'STRIPE') {
-            // Verificar firma de Stripe
-            const sig = req.headers['stripe-signature'];
-            const event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-            
-            if (event.type === 'checkout.session.completed') {
-                const session = event.data.object;
+        try {
+            event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+        } catch (err) {
+            console.warn(`⚠️ Webhook signature verification failed.`, err.message);
+            return res.status(400).send(`Webhook Error: ${err.message}`);
+        }
+
+        if (event.type === 'checkout.session.completed') {
+            const session = event.data.object;
+
+            // Manejar pago de $1
+            if (session.metadata.type === 'ONE_DOLLAR_CREDIT') {
+                const txn = await Transaction.findOne({ stripeSessionId: session.id });
+                if (txn) {
+                    txn.status = 'paid';
+                    await txn.save();
+
+                    const user = await User.findById(txn.user);
+                    if (user) {
+                        await user.addCredits(1, `Payment $1 for ${txn.action}`);
+                        console.log(`✅ Added 1 credit to user ${user.email}`);
+                    }
+                }
+            }
+            // Manejar Lifetime Membership (Legacy/Existing)
+            else if (session.metadata.petId) {
                 await activateLifetimeMembership(session.metadata.petId);
-            }
-        } else if (processor === 'MERCADOPAGO') {
-            if (data.status === 'approved') {
-                await activateLifetimeMembership(data.metadata.petId);
-            }
-        } else if (processor === 'LEMON_SQUEEZY') {
-            if (event === 'order_created' || event === 'subscription_created') {
-                await activateLifetimeMembership(data.custom.petId);
             }
         }
 
@@ -295,6 +389,53 @@ async function activateLifetimeMembership(petId) {
         pet.isLifetimeMember = true;
         pet.lastCheckup = new Date();
         await pet.save();
+
+        // 🚀 PROCESAR COMISIÓN DE AFILIADO (ESCROW VAULT)
+        await processAffiliateCommission(pet.owner, 97.00, 'LIFETIME_MEMBERSHIP');
+    }
+}
+
+/**
+ * Procesar comisión de afiliado y enviarla al Escrow Vault
+ */
+async function processAffiliateCommission(userId, amount, type) {
+    try {
+        const user = await User.findById(userId);
+        if (!user || !user.referredBy) return;
+
+        // Buscar al afiliado por código de referido
+        const affiliate = await User.findOne({ referralCode: user.referredBy });
+        if (!affiliate) return;
+
+        // Calcular comisión (30% estándar)
+        const COMMISSION_RATE = 0.30;
+        const commissionAmount = amount * COMMISSION_RATE;
+
+        // Importar controlador de Escrow dinámicamente para evitar ciclos
+        const escrowController = require('./escrowController');
+
+        // Generar ID de transacción interno si no hay uno externo disponible aquí
+        const txId = `COMM-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+        // 🏦 AGREGAR AL VAULT (No toca cuentas operativas)
+        await escrowController.addToEscrow(
+            affiliate._id,
+            txId,
+            commissionAmount,
+            'USD'
+        );
+
+        console.log(`✅ Affiliate Commission Processed: $${commissionAmount} for ${affiliate.email}`);
+
+        // Actualizar estadísticas del afiliado
+        affiliate.affiliate.lifetimeEarnings += commissionAmount;
+        if (!affiliate.affiliate.isAffiliate) {
+            affiliate.affiliate.isAffiliate = true; // Auto-convertir a afiliado
+        }
+        await affiliate.save();
+
+    } catch (error) {
+        console.error('❌ Error processing affiliate commission:', error);
     }
 }
 

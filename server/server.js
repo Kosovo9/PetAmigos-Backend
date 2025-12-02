@@ -199,11 +199,16 @@ app.use('/api/referrals', require('./routes/referralRoutes')); // 💎 Sistema d
 app.use('/api/affiliates', require('./routes/affiliateRoutes')); // 💰 Sistema de Afiliados y Códigos Promo
 
 app.use('/api/photos', require('./routes/photoRoutes')); // 🎨 Generación de Fotos con Watermark
+app.use('/api/photos', require('./routes/batchPhotoRoutes')); // 📸 Batch Upload & Auto-Analysis
+app.use('/api/universe', require('./routes/photoUniverseRoutes')); // 🌌 Photo Universe (Multi-Subject)
+app.use('/api/prompts', require('./routes/megaPromptRoutes')); // 📚 Mega Prompts & Reverse Engineering
+app.use('/api/escrow', require('./routes/escrowRoutes')); // 🏦 Affiliate Escrow Vault
 
 app.use('/api/love-stories', require('./routes/loveStoriesRoutes')); // ❤️ Historias de Adopción
 app.use('/api/fly', require('./routes/flyRoutes')); // ✈️ PetMatch Fly Policies
 app.use('/api/digital-twin', require('./routes/digitalTwinRoutes')); // 🧬 Pet Digital Twin
 app.use('/api/admin', require('./routes/adminRoutes')); // 🛡️ Admin Panel (Nivel NASA)
+app.use('/api/admin/generation', require('./routes/generationDashboardRoutes')); // 🎯 Generation Command Center
 app.use('/api/affiliates', require('./routes/affiliateRoutes')); // 💼 Affiliate System (Platinum Suite)
 
 

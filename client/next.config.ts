@@ -19,6 +19,14 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/',
+        destination: '/home-v2',
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);

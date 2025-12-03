@@ -242,10 +242,12 @@ export default function HomePage() {
                     <div className="flex flex-wrap justify-center items-center gap-8 mb-8">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe" className="h-10 md:h-12 hover:scale-110 transition-transform brightness-100" />
                         <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-10 md:h-12 hover:scale-110 transition-transform brightness-100" />
-                        <a href="https://www.mercadopago.com" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
+                        <a href="https://link.mercadopago.com.mx/studionexora" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
                             <img src="https://http2.mlstatic.com/storage/logos-api-admin/a5f047d0-9be0-11ec-aad4-c3381f368aaf-xl@2x.png" alt="Mercado Pago" className="h-10 md:h-12 brightness-100 bg-yellow-400 px-3 py-1 rounded" />
                         </a>
-                        <img src="https://assets.lemonsqueezy.com/media/2022/05/03023647/lemon-squeezy-logo-white.svg" alt="Lemon Squeezy" className="h-8 md:h-10 hover:scale-110 transition-transform brightness-100" />
+                        <a href="https://studionexora.lemonsqueezy.com" target="_blank" rel="noopener noreferrer" className="hover:scale-110 transition-transform">
+                            <img src="https://assets.lemonsqueezy.com/media/2022/05/03023647/lemon-squeezy-logo-white.svg" alt="Lemon Squeezy" className="h-8 md:h-10 brightness-100" />
+                        </a>
                     </div>
 
                     <div className="text-center text-gray-600 text-xs">

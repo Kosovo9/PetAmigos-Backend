@@ -4,7 +4,6 @@ import "./globals.css";
 import { MockAuthProvider } from "@/components/MockAuthProvider";
 import CosmicChristmasBackground from "@/components/CosmicChristmasBackground";
 import LanguageSelector from "@/components/LanguageSelector";
-import PetCursorChase from "@/components/PetCursorChase";
 import metadata from "./metadata";
 
 export { metadata };
@@ -32,7 +31,6 @@ export default function RootLayout({
         >
           <CosmicChristmasBackground />
           <LanguageSelector />
-          <PetCursorChase />
           <div className="relative z-10 flex flex-col min-h-screen">
             <main className="flex-grow">
               {children}

@@ -12,7 +12,7 @@ import {
     AlertCircle
 } from 'lucide-react';
 
-export default function HomePage() {
+export default function HomePage({ params: { locale } }: { params: { locale: string } }) {
     return (
         <div className="min-h-screen">
             {/* Hero Section - Transparente para ver el fondo cósmico */}

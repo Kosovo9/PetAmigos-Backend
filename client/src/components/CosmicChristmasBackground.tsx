@@ -1,9 +1,19 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 export default function CosmicChristmasBackground() {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return <div className="fixed inset-0 z-[-1] bg-gradient-to-b from-black via-[#0a0e27] to-black" />;
+    }
+
     return (
         <div className="fixed inset-0 z-[-1] overflow-hidden bg-gradient-to-b from-black via-[#0a0e27] to-black">
             {/* Estrellas brillantes */}

@@ -10,6 +10,7 @@ import LanguageSelector from "@/components/LanguageSelector";
 import PetCursorChase from "@/components/PetCursorChase";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import LaunchBanner from "@/components/LaunchBanner";
 import metadata from "./metadata";
 
 export { metadata };
@@ -40,6 +41,7 @@ export default function RootLayout({
           <ChristmasMusic />
           <LanguageSelector />
           <PetCursorChase />
+          <LaunchBanner />
           <div className="relative z-10 flex flex-col min-h-screen">
             <Header />
             <main className="flex-grow">

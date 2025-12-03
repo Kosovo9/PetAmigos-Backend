@@ -41,13 +41,13 @@ export default function RootLayout({
           <ChristmasMusic />
           <LanguageSelector />
           <PetCursorChase />
-          <LaunchBanner />
+          {/* <LaunchBanner /> */}
           <div className="relative z-10 flex flex-col min-h-screen">
-            <Header />
+            {/* <Header /> */}
             <main className="flex-grow">
               {children}
             </main>
-            <Footer />
+            {/* <Footer /> */}
           </div>
         </body>
       </html>

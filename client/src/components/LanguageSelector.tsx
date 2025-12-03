@@ -38,7 +38,7 @@ export default function LanguageSelector() {
         <>
             {/* Floating Language Button */}
             <motion.div
-                className="fixed bottom-8 left-8 z-50"
+                className="fixed top-8 left-8 z-50"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 1.5, type: "spring" }}
@@ -48,6 +48,7 @@ export default function LanguageSelector() {
                     className="relative group"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
+                    title={`Current: ${getCurrentLanguage().nativeName}`}
                 >
                     {/* Glow effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-xl opacity-60 group-hover:opacity-100 transition-opacity" />
@@ -56,27 +57,13 @@ export default function LanguageSelector() {
                     <div className="relative bg-gradient-to-br from-blue-600 to-purple-600 p-4 rounded-full shadow-2xl border-4 border-white/20">
                         <Globe className="w-8 h-8 text-white" />
                     </div>
-
-                    {/* Current language badge */}
-                    <motion.div
-                        className="absolute -top-2 -right-2 bg-white text-black px-2 py-1 rounded-full text-xs font-bold shadow-lg"
-                        animate={{
-                            scale: [1, 1.1, 1]
-                        }}
-                        transition={{
-                            duration: 2,
-                            repeat: Infinity
-                        }}
-                    >
-                        {getCurrentLanguage().flag}
-                    </motion.div>
                 </motion.button>
 
                 {/* Floating stars around button */}
                 {[...Array(3)].map((_, i) => (
                     <motion.div
                         key={i}
-                        className="absolute w-2 h-2 bg-yellow-300 rounded-full"
+                        className="absolute w-2 h-2 bg-yellow-300 rounded-full pointer-events-none"
                         style={{
                             top: Math.random() * 100 - 50,
                             left: Math.random() * 100 - 50
@@ -103,7 +90,7 @@ export default function LanguageSelector() {
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         exit={{ opacity: 0, x: -100, scale: 0.8 }}
                         transition={{ type: "spring", damping: 20 }}
-                        className="fixed bottom-28 left-8 z-40 bg-gradient-to-br from-blue-900/95 to-purple-900/95 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border-2 border-white/20 min-w-[350px] max-h-[500px] overflow-y-auto"
+                        className="fixed top-28 left-8 z-40 bg-gradient-to-br from-blue-900/95 to-purple-900/95 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border-2 border-white/20 min-w-[350px] max-h-[500px] overflow-y-auto"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between mb-4">
@@ -145,8 +132,8 @@ export default function LanguageSelector() {
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                         className={`p-4 rounded-xl transition-all ${isCurrent
-                                                ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-black shadow-lg shadow-yellow-500/50'
-                                                : 'bg-white/10 hover:bg-white/20 text-white'
+                                            ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-black shadow-lg shadow-yellow-500/50'
+                                            : 'bg-white/10 hover:bg-white/20 text-white'
                                             }`}
                                     >
                                         <div className="flex flex-col items-center gap-2">

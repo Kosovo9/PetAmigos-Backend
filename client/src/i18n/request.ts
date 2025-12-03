@@ -1,18 +1,8 @@
-import { notFound } from 'next/navigation';
 import { getRequestConfig } from 'next-intl/server';
+import { locales } from '../../i18n';
 
-export const locales = ['en-US', 'es-MX', 'ja-JP', 'en-CA', 'es-CL', 'fr-FR', 'de-DE', 'it-IT', 'pt-BR', 'ko-KR', 'zh-CN', 'ru-RU', 'ar-SA', 'es-ES', 'es-CO', 'es-AR', 'fr-CA', 'pt-PT', 'en-AU', 'en-GB'] as const;
-const defaultLocale = 'en-US';
+export { locales };
 
-export default getRequestConfig(async ({ requestLocale }) => {
-    let locale = await requestLocale;
-
-    if (!locale || !locales.includes(locale as any)) {
-        locale = defaultLocale;
-    }
-
-    return {
-        locale,
-        messages: (await import(`../../messages/${locale}.json`)).default
-    };
-});
+export default getRequestConfig(async ({ locale }) => ({
+    messages: (await import(`../../messages/${locale}.json`)).default
+}));

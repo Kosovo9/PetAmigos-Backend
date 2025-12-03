@@ -1,0 +1,73 @@
+{
+    "common": {
+        "appName": "PetMatch AI",
+        "pricing": "Prezzi",
+        "lostPets": "Animali Persi",
+        "chat": "Chat",
+        "login": "Accedi",
+        "signup": "Registrati",
+        "logout": "Esci"
+    },
+    "pricing": {
+        "title": "Sblocca l'Universo",
+        "subtitle": "Generazione IA premium, tracciamento globale di animali persi e temi natalizi esclusivi.",
+        "free": {
+            "name": "Gratuito",
+            "price": "$0",
+            "period": "/mese",
+            "features": {
+                "photos": "3 Foto IA / giorno (Con filigrana)",
+                "lostPets": "Visualizza Animali Persi",
+                "support": "Supporto Chat Base"
+            },
+            "button": "Inizia Gratis"
+        },
+        "pro": {
+            "name": "Pro",
+            "price": "$9.99",
+            "period": "/mese",
+            "badge": "PIÙ POPOLARE",
+            "features": {
+                "unlimited": "Foto IA Illimitate",
+                "noWatermark": "Senza Filigrane",
+                "hd": "Download 8K Ultra-HD",
+                "priority": "Generazione Prioritaria",
+                "alerts": "Allerte Globali Animali"
+            },
+            "button": "Ottieni Accesso Pro"
+        },
+        "agency": {
+            "name": "Agenzia",
+            "price": "$49",
+            "period": "/mese",
+            "features": {
+                "api": "Accesso API",
+                "license": "Licenza Commerciale",
+                "support": "Supporto Dedicato",
+                "branding": "Branding Personalizzato"
+            },
+            "button": "Contatta Vendite"
+        }
+    },
+    "lostPets": {
+        "title": "Radar Animali Persi",
+        "subtitle": "Rete globale di recupero animali alimentata da IA e comunità",
+        "report": "Segnala Animale Perso",
+        "search": "Cerca...",
+        "form": {
+            "name": "Nome Animale",
+            "type": "Tipo Animale",
+            "breed": "Razza",
+            "description": "Descrizione",
+            "location": "Ultima Posizione Vista",
+            "phone": "Telefono Contatto",
+            "submit": "Invia Segnalazione"
+        }
+    },
+    "chat": {
+        "title": "PetMatch Chat",
+        "search": "Cerca conversazioni...",
+        "typing": "Scrivi un messaggio...",
+        "select": "Seleziona una conversazione per iniziare a chattare"
+    }
+}

@@ -69,10 +69,24 @@ export const metadata: Metadata = {
     verification: {
         google: 'your-google-verification-code',
         yandex: 'your-yandex-verification-code',
-        bing: 'your-bing-verification-code',
+        other: {
+            bing: 'your-bing-verification-code',
+        },
     },
     alternates: {
         canonical: 'https://www.petmatch.fun',
+        languages: {
+            'en-US': 'https://www.petmatch.fun/en',
+            'es-ES': 'https://www.petmatch.fun/es',
+            'pt-BR': 'https://www.petmatch.fun/pt',
+            'de-DE': 'https://www.petmatch.fun/de',
+            'it-IT': 'https://www.petmatch.fun/it',
+            'zh-CN': 'https://www.petmatch.fun/zh',
+            'ja-JP': 'https://www.petmatch.fun/ja',
+            'fr-FR': 'https://www.petmatch.fun/fr',
+            'ru-RU': 'https://www.petmatch.fun/ru',
+            'ko-KR': 'https://www.petmatch.fun/ko',
+        },
     },
     category: 'technology',
 };

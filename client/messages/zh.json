@@ -1,0 +1,73 @@
+{
+    "common": {
+        "appName": "PetMatch AI",
+        "pricing": "价格",
+        "lostPets": "走失宠物",
+        "chat": "聊天",
+        "login": "登录",
+        "signup": "注册",
+        "logout": "登出"
+    },
+    "pricing": {
+        "title": "解锁宇宙",
+        "subtitle": "高级AI生成、全球走失宠物追踪和独家圣诞主题。让您的宠物可爱度光速变现。",
+        "free": {
+            "name": "免费",
+            "price": "$0",
+            "period": "/月",
+            "features": {
+                "photos": "每天3张AI照片（带水印）",
+                "lostPets": "查看走失宠物",
+                "support": "基础聊天支持"
+            },
+            "button": "免费开始"
+        },
+        "pro": {
+            "name": "专业版",
+            "price": "$9.99",
+            "period": "/月",
+            "badge": "最受欢迎",
+            "features": {
+                "unlimited": "无限AI照片",
+                "noWatermark": "无水印",
+                "hd": "8K超高清下载",
+                "priority": "优先生成",
+                "alerts": "全球宠物警报"
+            },
+            "button": "获取专业版"
+        },
+        "agency": {
+            "name": "企业版",
+            "price": "$49",
+            "period": "/月",
+            "features": {
+                "api": "API访问",
+                "license": "商业许可",
+                "support": "专属支持",
+                "branding": "自定义品牌"
+            },
+            "button": "联系销售"
+        }
+    },
+    "lostPets": {
+        "title": "走失宠物雷达",
+        "subtitle": "由AI和社区驱动的全球宠物救援网络",
+        "report": "报告走失宠物",
+        "search": "搜索...",
+        "form": {
+            "name": "宠物名字",
+            "type": "宠物类型",
+            "breed": "品种",
+            "description": "描述",
+            "location": "最后出现位置",
+            "phone": "联系电话",
+            "submit": "提交报告"
+        }
+    },
+    "chat": {
+        "title": "PetMatch 聊天",
+        "search": "搜索对话...",
+        "typing": "输入消息...",
+        "select": "选择对话开始聊天"
+    }
+}

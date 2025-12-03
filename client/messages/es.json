@@ -1,0 +1,73 @@
+{
+    "common": {
+        "appName": "PetMatch AI",
+        "pricing": "Precios",
+        "lostPets": "Mascotas Perdidas",
+        "chat": "Chat",
+        "login": "Iniciar Sesión",
+        "signup": "Registrarse",
+        "logout": "Cerrar Sesión"
+    },
+    "pricing": {
+        "title": "Desbloquea el Universo",
+        "subtitle": "Generación IA premium, seguimiento global de mascotas perdidas y temas navideños exclusivos. Monetiza la ternura de tu mascota a la velocidad de la luz.",
+        "free": {
+            "name": "Gratis",
+            "price": "$0",
+            "period": "/mes",
+            "features": {
+                "photos": "3 Fotos IA / día (Con marca de agua)",
+                "lostPets": "Ver Mascotas Perdidas",
+                "support": "Soporte Chat Básico"
+            },
+            "button": "Comenzar Gratis"
+        },
+        "pro": {
+            "name": "Pro",
+            "price": "$9.99",
+            "period": "/mes",
+            "badge": "MÁS POPULAR",
+            "features": {
+                "unlimited": "Fotos IA Ilimitadas",
+                "noWatermark": "Sin Marcas de Agua",
+                "hd": "Descargas 8K Ultra-HD",
+                "priority": "Generación Prioritaria",
+                "alerts": "Alertas Globales de Mascotas"
+            },
+            "button": "Obtener Acceso Pro"
+        },
+        "agency": {
+            "name": "Agencia",
+            "price": "$49",
+            "period": "/mes",
+            "features": {
+                "api": "Acceso API",
+                "license": "Licencia Comercial",
+                "support": "Soporte Dedicado",
+                "branding": "Marca Personalizada"
+            },
+            "button": "Contactar Ventas"
+        }
+    },
+    "lostPets": {
+        "title": "Radar de Mascotas Perdidas",
+        "subtitle": "Red global de recuperación de mascotas impulsada por IA y comunidad",
+        "report": "Reportar Mascota Perdida",
+        "search": "Buscar...",
+        "form": {
+            "name": "Nombre de la Mascota",
+            "type": "Tipo de Mascota",
+            "breed": "Raza",
+            "description": "Descripción",
+            "location": "Última Ubicación Vista",
+            "phone": "Teléfono de Contacto",
+            "submit": "Enviar Reporte"
+        }
+    },
+    "chat": {
+        "title": "PetMatch Chat",
+        "search": "Buscar conversaciones...",
+        "typing": "Escribe un mensaje...",
+        "select": "Selecciona una conversación para comenzar a chatear"
+    }
+}

@@ -1,10 +1,12 @@
 'use client';
 import Link from 'next/link';
-import { Menu, X, Sparkles, MessageCircle, MapPin, Heart } from 'lucide-react';
+import { Menu, X, Sparkles, MessageCircle, MapPin, Heart, DollarSign, Users, LogOut, User as UserIcon } from 'lucide-react';
 import { useState } from 'react';
+import { useMockAuth } from './MockAuthProvider';
 
 export default function Header() {
     const [isOpen, setIsOpen] = useState(false);
+    const { isSignedIn, user, signOut } = useMockAuth();
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-lg border-b border-white/10">
@@ -30,7 +32,7 @@ export default function Header() {
                             <MessageCircle className="w-4 h-4 text-purple-400" />
                             Chat
                         </Link>
-                        <Link href="/walks" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
+                        <Link href="/app/en/dog-walking/miami" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
                             <MapPin className="w-4 h-4 text-green-400" />
                             Paseos
                         </Link>
@@ -38,16 +40,48 @@ export default function Header() {
                             <Heart className="w-4 h-4 text-red-400" />
                             Historias
                         </Link>
+                        <Link href="/affiliates" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
+                            <Users className="w-4 h-4 text-blue-400" />
+                            Afiliaciones
+                        </Link>
+                        <Link href="/pricing" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
+                            <DollarSign className="w-4 h-4 text-yellow-400" />
+                            Precios
+                        </Link>
                     </nav>
 
-                    {/* CTA Button */}
-                    <div className="hidden md:block">
-                        <Link
-                            href="/signup"
-                            className="bg-white text-black px-6 py-2.5 rounded-full font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-                        >
-                            Empezar Gratis
-                        </Link>
+                    {/* Auth Buttons */}
+                    <div className="hidden md:flex items-center gap-3">
+                        {!isSignedIn ? (
+                            <>
+                                <Link
+                                    href="/sign-in"
+                                    className="text-white/80 hover:text-white font-medium transition-colors px-4 py-2"
+                                >
+                                    Iniciar Sesión
+                                </Link>
+                                <Link
+                                    href="/sign-up"
+                                    className="bg-white text-black px-6 py-2.5 rounded-full font-bold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+                                >
+                                    Empezar Gratis
+                                </Link>
+                            </>
+                        ) : (
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 text-white/90">
+                                    <UserIcon className="w-5 h-5" />
+                                    <span className="text-sm">{user?.firstName}</span>
+                                </div>
+                                <button
+                                    onClick={signOut}
+                                    className="text-white/80 hover:text-white font-medium transition-colors px-4 py-2 flex items-center gap-2"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    Salir
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -68,6 +102,8 @@ export default function Header() {
                         <Link href="/chat" className="text-lg text-white/90 py-2 border-b border-white/5">💬 Chat</Link>
                         <Link href="/walks" className="text-lg text-white/90 py-2 border-b border-white/5">🐕 Paseos</Link>
                         <Link href="/love-stories" className="text-lg text-white/90 py-2 border-b border-white/5">❤️ Historias</Link>
+                        <Link href="/affiliates" className="text-lg text-white/90 py-2 border-b border-white/5">👥 Afiliaciones</Link>
+                        <Link href="/pricing" className="text-lg text-white/90 py-2 border-b border-white/5">💲 Precios</Link>
                         <Link href="/signup" className="bg-purple-600 text-white text-center py-3 rounded-xl font-bold mt-4">
                             Crear Cuenta Gratis
                         </Link>

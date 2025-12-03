@@ -37,6 +37,9 @@ exports.processLifetimeMembership = async (req, res) => {
             case 'GLOBAL':
                 paymentResult = await processLemonSqueezy(amount, currency, paymentMethod);
                 break;
+            case 'EU':
+                paymentResult = await processPayPal(amount, currency, paymentMethod);
+                break;
             case 'US':
             default:
                 paymentResult = await processStripe(amount, currency, paymentMethod);
@@ -92,6 +95,10 @@ function detectRegion(currency, req) {
     // Por currency
     if (['ARS', 'BRL', 'MXN', 'CLP', 'COP'].includes(currency)) {
         return 'LATAM';
+    }
+
+    if (['EUR', 'GBP'].includes(currency)) {
+        return 'EU'; // Prefer PayPal for Europe
     }
 
     // Por IP (si está disponible)
@@ -177,6 +184,61 @@ async function processMercadoPago(amount, currency, paymentMethod) {
             transactionId: response.data.id,
             paymentUrl: response.data.init_point,
             processor: 'MERCADOPAGO'
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: error.response?.data?.message || error.message
+        };
+    }
+}
+
+/**
+ * Procesar pago con PayPal (EU/Alternative)
+ */
+async function processPayPal(amount, currency, paymentMethod) {
+    try {
+        const clientId = process.env.PAYPAL_CLIENT_ID;
+        const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+        const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+
+        // 1. Get Access Token
+        const tokenResponse = await axios.post('https://api-m.sandbox.paypal.com/v1/oauth2/token', 'grant_type=client_credentials', {
+            headers: {
+                'Authorization': `Basic ${auth}`,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+        const accessToken = tokenResponse.data.access_token;
+
+        // 2. Create Order
+        const orderResponse = await axios.post('https://api-m.sandbox.paypal.com/v2/checkout/orders', {
+            intent: 'CAPTURE',
+            purchase_units: [{
+                amount: {
+                    currency_code: currency,
+                    value: amount.toString()
+                },
+                description: "PetAmigos World - Lifetime Membership"
+            }],
+            application_context: {
+                return_url: `${process.env.CLIENT_URL}/success`,
+                cancel_url: `${process.env.CLIENT_URL}/cancel`
+            }
+        }, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const approveLink = orderResponse.data.links.find(link => link.rel === 'approve');
+
+        return {
+            success: true,
+            transactionId: orderResponse.data.id,
+            paymentUrl: approveLink.href,
+            processor: 'PAYPAL'
         };
     } catch (error) {
         return {

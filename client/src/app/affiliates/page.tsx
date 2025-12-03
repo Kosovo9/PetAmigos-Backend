@@ -1,99 +1,160 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
+import React, { useState } from 'react';
+import { Users, Copy, QrCode, DollarSign, TrendingUp, Gift } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle, Globe, Shield } from 'lucide-react';
 
-export default function AffiliateLandingPage() {
+export default function AffiliatesPage() {
+    const [promoCode, setPromoCode] = useState('');
+    const [earnings, setEarnings] = useState(0);
+    const [referrals, setReferrals] = useState(0);
+
+    const generatePromoCode = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/affiliates/create-code`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    code: `PET${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+                    discount: 20
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                setPromoCode(data.code);
+            }
+        } catch (error) {
+            console.error('Error generating code:', error);
+        }
+    };
+
+    const copyCode = () => {
+        navigator.clipboard.writeText(promoCode);
+        alert('¡Código copiado!');
+    };
+
     return (
-        <div className="min-h-screen bg-black text-white">
-            {/* Hero Section */}
-            <div className="relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=2069&auto=format&fit=crop')] bg-cover bg-center opacity-20" />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/80 to-black" />
+        <div className="min-h-screen pt-32 pb-20 px-4">
+            <div className="container mx-auto max-w-6xl">
 
-                <div className="container mx-auto px-6 py-32 relative z-10 text-center">
+                {/* Header */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center mb-16"
+                >
+                    <div className="inline-flex items-center gap-2 bg-purple-500/20 text-purple-300 px-4 py-2 rounded-full text-sm font-bold mb-4">
+                        <Users className="w-4 h-4" />
+                        PROGRAMA DE AFILIADOS
+                    </div>
+                    <h1 className="text-5xl md:text-7xl font-black mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400">
+                        Gana con PetMatch
+                    </h1>
+                    <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+                        Comparte el amor por las mascotas y gana comisiones increíbles
+                    </p>
+                </motion.div>
+
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10"
                     >
-                        <span className="inline-block px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 font-mono text-sm mb-6">
-                            PROGRAMA DE PARTNERS OFICIAL
-                        </span>
-                        <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-white via-gray-200 to-gray-500 bg-clip-text text-transparent">
-                            Monetiza tu Pasión por las Mascotas
-                        </h1>
-                        <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-                            Únete a la plataforma #1 de IA para mascotas. Gana hasta un 30% de comisión recurrente por cada venta. Pagos automáticos y herramientas de marketing incluidas.
-                        </p>
+                        <DollarSign className="w-10 h-10 text-green-400 mb-4" />
+                        <h3 className="text-3xl font-black text-white mb-2">${earnings}</h3>
+                        <p className="text-gray-400">Ganancias Totales</p>
+                    </motion.div>
 
-                        <div className="flex flex-col md:flex-row gap-4 justify-center">
-                            <Link href="/login?redirect=/affiliates/dashboard">
-                                <button className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white rounded-full font-bold text-lg transition-all shadow-[0_0_30px_rgba(22,163,74,0.3)] hover:scale-105 flex items-center gap-2">
-                                    Convertirme en Partner <ArrowRight size={20} />
-                                </button>
-                            </Link>
-                            <Link href="/affiliates/about">
-                                <button className="px-8 py-4 bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-full font-bold text-lg transition-all">
-                                    Más Información
-                                </button>
-                            </Link>
-                        </div>
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10"
+                    >
+                        <Users className="w-10 h-10 text-blue-400 mb-4" />
+                        <h3 className="text-3xl font-black text-white mb-2">{referrals}</h3>
+                        <p className="text-gray-400">Referidos Activos</p>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3 }}
+                        className="bg-gradient-to-br from-pink-600/20 to-red-600/20 backdrop-blur-xl p-6 rounded-2xl border border-white/10"
+                    >
+                        <TrendingUp className="w-10 h-10 text-pink-400 mb-4" />
+                        <h3 className="text-3xl font-black text-white mb-2">30%</h3>
+                        <p className="text-gray-400">Comisión por Venta</p>
                     </motion.div>
                 </div>
-            </div>
 
-            {/* Features Grid */}
-            <div className="container mx-auto px-6 py-20">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="bg-[#111] border border-white/10 p-8 rounded-3xl hover:border-green-500/30 transition-all group">
-                        <div className="w-14 h-14 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-500 mb-6 group-hover:scale-110 transition-transform">
-                            <Globe size={32} />
-                        </div>
-                        <h3 className="text-2xl font-bold mb-4">Pagos Globales</h3>
-                        <p className="text-gray-400">
-                            Recibe tus ganancias en cualquier parte del mundo vía PayPal, Stripe o Transferencia Bancaria. Sin costos ocultos.
-                        </p>
+                {/* Promo Code Generator */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 backdrop-blur-xl p-8 rounded-3xl border border-white/10 mb-12"
+                >
+                    <div className="flex items-center gap-3 mb-6">
+                        <Gift className="w-8 h-8 text-yellow-400" />
+                        <h2 className="text-2xl font-black text-white">Tu Código de Afiliado</h2>
                     </div>
-                    <div className="bg-[#111] border border-white/10 p-8 rounded-3xl hover:border-green-500/30 transition-all group">
-                        <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform">
-                            <Shield size={32} />
-                        </div>
-                        <h3 className="text-2xl font-bold mb-4">Seguridad Blindada</h3>
-                        <p className="text-gray-400">
-                            Tu dinero está seguro. Autenticación de 2 factores (2FA) y monitoreo de fraude en tiempo real para proteger tus ingresos.
-                        </p>
-                    </div>
-                    <div className="bg-[#111] border border-white/10 p-8 rounded-3xl hover:border-green-500/30 transition-all group">
-                        <div className="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-500 mb-6 group-hover:scale-110 transition-transform">
-                            <CheckCircle size={32} />
-                        </div>
-                        <h3 className="text-2xl font-bold mb-4">Conversión Alta</h3>
-                        <p className="text-gray-400">
-                            Nuestras landing pages están optimizadas para convertir. Cookies de 90 días aseguran que no pierdas ninguna comisión.
-                        </p>
-                    </div>
-                </div>
-            </div>
 
-            {/* Disclaimer Footer */}
-            <div className="border-t border-white/10 bg-[#050505] py-12">
-                <div className="container mx-auto px-6 text-center">
-                    <p className="text-gray-500 text-sm max-w-4xl mx-auto mb-8">
-                        DISCLAIMER: PetMatch Affiliate Program is an independent partnership program. Earnings are dependent on your marketing efforts and sales generated.
-                        PetMatch is not responsible for tax reporting in your jurisdiction. You are solely responsible for declaring your income and paying applicable taxes.
-                        <br /><br />
-                        DESCARGO DE RESPONSABILIDAD: El Programa de Afiliados de PetMatch es una asociación independiente. Las ganancias dependen de sus esfuerzos de marketing.
-                        PetMatch no es responsable de la declaración de impuestos en su jurisdicción. Usted es el único responsable de declarar sus ingresos.
-                    </p>
-                    <div className="flex justify-center gap-6 text-sm text-gray-400">
-                        <Link href="/terms" className="hover:text-white">Términos y Condiciones</Link>
-                        <Link href="/privacy" className="hover:text-white">Política de Privacidad</Link>
-                        <Link href="/affiliates/support" className="hover:text-white">Soporte para Partners</Link>
-                    </div>
+                    {!promoCode ? (
+                        <button
+                            onClick={generatePromoCode}
+                            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:scale-105 transition-transform w-full md:w-auto"
+                        >
+                            Generar Mi Código
+                        </button>
+                    ) : (
+                        <div className="flex flex-col md:flex-row gap-4 items-center">
+                            <div className="flex-1 bg-black/50 p-4 rounded-xl border border-purple-500/50">
+                                <p className="text-3xl font-black text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+                                    {promoCode}
+                                </p>
+                            </div>
+                            <button
+                                onClick={copyCode}
+                                className="bg-white/10 hover:bg-white/20 text-white px-6 py-4 rounded-xl font-bold flex items-center gap-2 transition-colors"
+                            >
+                                <Copy className="w-5 h-5" />
+                                Copiar
+                            </button>
+                        </div>
+                    )}
+                </motion.div>
+
+                {/* Benefits */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {[
+                        { icon: '💰', title: 'Comisión del 30%', desc: 'Por cada venta que generes' },
+                        { icon: '🎁', title: 'Bonos Especiales', desc: 'Al alcanzar metas mensuales' },
+                        { icon: '📊', title: 'Dashboard Completo', desc: 'Sigue tus estadísticas en tiempo real' },
+                        { icon: '🚀', title: 'Retiros Rápidos', desc: 'Recibe tus ganancias en 24-48hrs' }
+                    ].map((benefit, idx) => (
+                        <motion.div
+                            key={idx}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.5 + idx * 0.1 }}
+                            className="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors"
+                        >
+                            <div className="text-4xl mb-3">{benefit.icon}</div>
+                            <h3 className="text-xl font-bold text-white mb-2">{benefit.title}</h3>
+                            <p className="text-gray-400">{benefit.desc}</p>
+                        </motion.div>
+                    ))}
                 </div>
+
             </div>
         </div>
     );

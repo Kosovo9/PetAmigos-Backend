@@ -1,0 +1,73 @@
+{
+    "common": {
+        "appName": "PetMatch AI",
+        "pricing": "料金",
+        "lostPets": "迷子ペット",
+        "chat": "チャット",
+        "login": "ログイン",
+        "signup": "登録",
+        "logout": "ログアウト"
+    },
+    "pricing": {
+        "title": "宇宙を解き放つ",
+        "subtitle": "プレミアムAI生成、グローバル迷子ペット追跡、限定クリスマステーマ。",
+        "free": {
+            "name": "無料",
+            "price": "$0",
+            "period": "/月",
+            "features": {
+                "photos": "1日3枚のAI写真（透かし入り）",
+                "lostPets": "迷子ペットを見る",
+                "support": "基本チャットサポート"
+            },
+            "button": "無料で始める"
+        },
+        "pro": {
+            "name": "プロ",
+            "price": "$9.99",
+            "period": "/月",
+            "badge": "最も人気",
+            "features": {
+                "unlimited": "無制限AI写真",
+                "noWatermark": "透かしなし",
+                "hd": "8K超高画質ダウンロード",
+                "priority": "優先生成",
+                "alerts": "グローバルペット警報"
+            },
+            "button": "プロアクセスを取得"
+        },
+        "agency": {
+            "name": "エージェンシー",
+            "price": "$49",
+            "period": "/月",
+            "features": {
+                "api": "APIアクセス",
+                "license": "商用ライセンス",
+                "support": "専用サポート",
+                "branding": "カスタムブランディング"
+            },
+            "button": "営業に連絡"
+        }
+    },
+    "lostPets": {
+        "title": "迷子ペットレーダー",
+        "subtitle": "AIとコミュニティによるグローバルペット救助ネットワーク",
+        "report": "迷子ペットを報告",
+        "search": "検索...",
+        "form": {
+            "name": "ペット名",
+            "type": "ペットタイプ",
+            "breed": "品種",
+            "description": "説明",
+            "location": "最後に見た場所",
+            "phone": "連絡先電話",
+            "submit": "レポートを送信"
+        }
+    },
+    "chat": {
+        "title": "PetMatch チャット",
+        "search": "会話を検索...",
+        "typing": "メッセージを入力...",
+        "select": "チャットを開始する会話を選択"
+    }
+}

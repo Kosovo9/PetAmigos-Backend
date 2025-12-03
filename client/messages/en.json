@@ -1,0 +1,73 @@
+{
+    "common": {
+        "appName": "PetMatch AI",
+        "pricing": "Pricing",
+        "lostPets": "Lost Pets",
+        "chat": "Chat",
+        "login": "Login",
+        "signup": "Sign Up",
+        "logout": "Logout"
+    },
+    "pricing": {
+        "title": "Unlock the Universe",
+        "subtitle": "Premium AI generation, global lost pet tracking, and exclusive Christmas themes. Monetize your pet's cuteness at lightspeed.",
+        "free": {
+            "name": "Free",
+            "price": "$0",
+            "period": "/mo",
+            "features": {
+                "photos": "3 AI Photos / day (Watermarked)",
+                "lostPets": "View Lost Pets",
+                "support": "Basic Chat Support"
+            },
+            "button": "Start Free"
+        },
+        "pro": {
+            "name": "Pro",
+            "price": "$9.99",
+            "period": "/mo",
+            "badge": "MOST POPULAR",
+            "features": {
+                "unlimited": "Unlimited AI Photos",
+                "noWatermark": "No Watermarks",
+                "hd": "8K Ultra-HD Downloads",
+                "priority": "Priority Generation (Fast Lane)",
+                "alerts": "Global Lost Pet Alerts"
+            },
+            "button": "Get Pro Access"
+        },
+        "agency": {
+            "name": "Agency",
+            "price": "$49",
+            "period": "/mo",
+            "features": {
+                "api": "API Access",
+                "license": "Commercial License",
+                "support": "Dedicated Support",
+                "branding": "Custom Branding"
+            },
+            "button": "Contact Sales"
+        }
+    },
+    "lostPets": {
+        "title": "Lost Pets Radar",
+        "subtitle": "Global pet recovery network powered by AI and community",
+        "report": "Report Lost Pet",
+        "search": "Search...",
+        "form": {
+            "name": "Pet Name",
+            "type": "Pet Type",
+            "breed": "Breed",
+            "description": "Description",
+            "location": "Last Seen Location",
+            "phone": "Contact Phone",
+            "submit": "Submit Report"
+        }
+    },
+    "chat": {
+        "title": "PetMatch Chat",
+        "search": "Search conversations...",
+        "typing": "Type a message...",
+        "select": "Select a conversation to start chatting"
+    }
+}

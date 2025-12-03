@@ -210,6 +210,7 @@ app.use('/api/digital-twin', require('./routes/digitalTwinRoutes')); // 🧬 Pet
 app.use('/api/admin', require('./routes/adminRoutes')); // 🛡️ Admin Panel (Nivel NASA)
 app.use('/api/admin/generation', require('./routes/generationDashboardRoutes')); // 🎯 Generation Command Center
 app.use('/api/affiliates', require('./routes/affiliateRoutes')); // 💼 Affiliate System (Platinum Suite)
+app.use('/api/lost-pets', require('./routes/lostPetsRoutes')); // 🔍 Lost Pets Radar (Global)
 
 
 

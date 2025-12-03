@@ -1,29 +1,58 @@
-services:
-  - type: web
-    name: petamigos-backend
-    env: node
-    buildCommand: cd server && npm install
-    startCommand: cd server && npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 5000
-      - key: MONGO_URI
-        sync: false
-      - key: JWT_SECRET
-        sync: false
-      - key: STRIPE_SECRET_KEY
-        sync: false
-      - key: STRIPE_PUBLISHABLE_KEY
-        sync: false
-      - key: OPENAI_API_KEY
-        sync: false
-      - key: GOOGLE_AI_API_KEY
-        sync: false
-      - key: CLIENT_URL
-        sync: false
-    healthCheckPath: /health
-
-
-
+{
+  "build": {
+    "env": {
+      "NODE_ENV": "production",
+      "PORT": "5000",
+      "CLIENT_URL": "https://www.petmatch.fun",
+      "MONGO_URI": "@mongo_uri",
+      "JWT_SECRET": "@jwt_secret",
+      "STRIPE_SECRET_KEY": "@stripe_secret_key",
+      "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret",
+      "SUPABASE_URL": "@supabase_url",
+      "SUPABASE_KEY": "@supabase_key",
+      "GOOGLE_AI_KEY": "@google_ai_key",
+      "LAUNCH_MODE": "PRODUCTION"
+    }
+  },
+  "services": [
+    {
+      "type": "web",
+      "name": "petmatch-backend",
+      "env": "node",
+      "region": "oregon",
+      "plan": "starter",
+      "buildCommand": "cd server && npm install",
+      "startCommand": "cd server && npm start",
+      "envVars": [
+        {
+          "key": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "key": "PORT",
+          "value": "5000"
+        },
+        {
+          "key": "CLIENT_URL",
+          "value": "https://www.petmatch.fun"
+        },
+        {
+          "key": "MONGO_URI",
+          "sync": false
+        },
+        {
+          "key": "JWT_SECRET",
+          "sync": false
+        },
+        {
+          "key": "STRIPE_SECRET_KEY",
+          "sync": false
+        },
+        {
+          "key": "LAUNCH_MODE",
+          "value": "PRODUCTION"
+        }
+      ]
+    }
+  ]
+}

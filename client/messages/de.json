@@ -1,0 +1,73 @@
+{
+    "common": {
+        "appName": "PetMatch AI",
+        "pricing": "Preise",
+        "lostPets": "Verlorene Haustiere",
+        "chat": "Chat",
+        "login": "Anmelden",
+        "signup": "Registrieren",
+        "logout": "Abmelden"
+    },
+    "pricing": {
+        "title": "Das Universum Freischalten",
+        "subtitle": "Premium KI-Generierung, globale Verfolgung verlorener Haustiere und exklusive Weihnachtsthemen.",
+        "free": {
+            "name": "Kostenlos",
+            "price": "$0",
+            "period": "/Monat",
+            "features": {
+                "photos": "3 KI-Fotos / Tag (Mit Wasserzeichen)",
+                "lostPets": "Verlorene Haustiere Ansehen",
+                "support": "Basis Chat-Support"
+            },
+            "button": "Kostenlos Starten"
+        },
+        "pro": {
+            "name": "Pro",
+            "price": "$9.99",
+            "period": "/Monat",
+            "badge": "AM BELIEBTESTEN",
+            "features": {
+                "unlimited": "Unbegrenzte KI-Fotos",
+                "noWatermark": "Keine Wasserzeichen",
+                "hd": "8K Ultra-HD Downloads",
+                "priority": "Prioritäts-Generierung",
+                "alerts": "Globale Haustier-Warnungen"
+            },
+            "button": "Pro-Zugang Erhalten"
+        },
+        "agency": {
+            "name": "Agentur",
+            "price": "$49",
+            "period": "/Monat",
+            "features": {
+                "api": "API-Zugang",
+                "license": "Kommerzielle Lizenz",
+                "support": "Dedizierter Support",
+                "branding": "Benutzerdefiniertes Branding"
+            },
+            "button": "Vertrieb Kontaktieren"
+        }
+    },
+    "lostPets": {
+        "title": "Radar für Verlorene Haustiere",
+        "subtitle": "Globales Haustier-Rettungsnetzwerk mit KI und Community",
+        "report": "Verlorenes Haustier Melden",
+        "search": "Suchen...",
+        "form": {
+            "name": "Name des Haustiers",
+            "type": "Haustiertyp",
+            "breed": "Rasse",
+            "description": "Beschreibung",
+            "location": "Zuletzt Gesehen",
+            "phone": "Kontakt-Telefon",
+            "submit": "Bericht Senden"
+        }
+    },
+    "chat": {
+        "title": "PetMatch Chat",
+        "search": "Unterhaltungen durchsuchen...",
+        "typing": "Nachricht eingeben...",
+        "select": "Wählen Sie eine Unterhaltung zum Chatten"
+    }
+}

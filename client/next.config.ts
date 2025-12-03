@@ -19,6 +19,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  devIndicators: {
+    buildActivity: false, // Oculta el menú de desarrollo
+  },
   async rewrites() {
     return [
       {

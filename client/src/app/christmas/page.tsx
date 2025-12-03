@@ -1,15 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, Wand2, Download, Share2 } from 'lucide-react';
-import PhotoUploader from '@/components/PhotoUploader';
+import { Sparkles, Wand2, Download, Lock, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
-export default function AIPhotoGeneratorDemo() {
+export default function AIPhotoGenerator() {
     const [photos, setPhotos] = useState<File[]>([]);
     const [generating, setGenerating] = useState(false);
     const [generatedImage, setGeneratedImage] = useState<string | null>(null);
     const [scenario, setScenario] = useState('christmas-forest');
+    const [isPro, setIsPro] = useState(false); // Simular si el usuario es Pro
 
     const scenarios = [
         { id: 'christmas-forest', name: 'Bosque Navideño', emoji: '🌲' },
@@ -19,6 +20,12 @@ export default function AIPhotoGeneratorDemo() {
         { id: 'snow-adventure', name: 'Aventura en la Nieve', emoji: '⛄' }
     ];
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setPhotos(Array.from(e.target.files));
+        }
+    };
+
     const generatePhoto = async () => {
         if (photos.length === 0) {
             alert('Por favor sube al menos una foto');
@@ -26,6 +33,7 @@ export default function AIPhotoGeneratorDemo() {
         }
 
         setGenerating(true);
+        setGeneratedImage(null);
 
         try {
             const token = localStorage.getItem('token');
@@ -50,148 +58,246 @@ export default function AIPhotoGeneratorDemo() {
             const data = await response.json();
 
             if (data.success) {
+                // IMPORTANTE: El backend debe devolver la imagen CON marca de agua
                 setGeneratedImage(data.imageUrl);
-
-                // Mostrar info del engine usado
-                console.log(`✅ Generado con: ${data.engine}`);
-                console.log(`📊 Calidad: ${data.quality}`);
-                console.log(`💰 Costo: $${data.cost || 0}`);
+                alert('¡Foto generada con éxito! Actualiza a Pro para descargar sin marca de agua.');
             } else {
-                alert(data.error || 'Error al generar imagen');
+                alert(data.message || 'Error al generar foto');
             }
-
         } catch (error) {
             console.error('Error:', error);
-            alert('Error al generar la imagen. Intenta de nuevo.');
+            alert('Error al conectar con el servidor');
         } finally {
             setGenerating(false);
         }
     };
 
+    const downloadPhoto = () => {
+        if (!generatedImage) return;
+
+        if (!isPro) {
+            // Redirigir a pricing si no es Pro
+            window.location.href = '/pricing';
+            return;
+        }
+
+        // Si es Pro, descargar sin marca de agua
+        const link = document.createElement('a');
+        link.href = generatedImage.replace('_watermarked', '_clean'); // Backend debe tener versión limpia
+        link.download = `petmatch_${Date.now()}.png`;
+        link.click();
+    };
+
     return (
-        <div className="min-h-screen bg-black text-white py-20 px-4">
-            <div className="container mx-auto max-w-6xl">
+        <div className="min-h-screen pt-32 pb-20 px-4">
+            <div className="container mx-auto max-w-5xl">
+
                 {/* Header */}
-                <div className="text-center mb-12">
-                    <h1 className="text-5xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 bg-clip-text text-transparent mb-4">
-                        ✨ Generador de Fotos Navideñas IA
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center mb-12"
+                >
+                    <div className="inline-flex items-center gap-2 bg-purple-500/20 text-purple-300 px-4 py-2 rounded-full text-sm font-bold mb-4">
+                        <Sparkles className="w-4 h-4" />
+                        GENERADOR DE FOTOS CON IA
+                    </div>
+                    <h1 className="text-5xl md:text-7xl font-black mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400">
+                        Fotos Navideñas con IA
                     </h1>
-                    <p className="text-gray-400 text-lg">
-                        Transforma las fotos de tu mascota en arte navideño profesional
+                    <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+                        Sube fotos de tu mascota y crea escenas navideñas mágicas
                     </p>
-                </div>
+                </motion.div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Left: Upload & Settings */}
-                    <div className="space-y-6">
-                        <div className="bg-[#111] border border-white/10 rounded-3xl p-8">
-                            <h2 className="text-2xl font-bold mb-6">1. Sube tus Fotos</h2>
-                            <PhotoUploader
-                                onPhotosChange={setPhotos}
-                                maxPhotos={5}
-                                language="es"
+
+                    {/* Panel izquierdo: Upload & Generate */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 backdrop-blur-xl p-8 rounded-3xl border border-white/10"
+                    >
+                        <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                            <Wand2 className="w-6 h-6 text-purple-400" />
+                            Generador
+                        </h2>
+
+                        {/* Upload */}
+                        <div className="mb-6">
+                            <label className="block text-white/80 mb-3 font-semibold">
+                                1. Sube fotos de tu mascota:
+                            </label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleFileChange}
+                                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700 transition-all"
                             />
+                            {photos.length > 0 && (
+                                <p className="text-green-400 text-sm mt-2">
+                                    ✓ {photos.length} foto(s) seleccionada(s)
+                                </p>
+                            )}
                         </div>
 
-                        <div className="bg-[#111] border border-white/10 rounded-3xl p-8">
-                            <h2 className="text-2xl font-bold mb-6">2. Elige un Escenario</h2>
+                        {/* Scenario selector */}
+                        <div className="mb-6">
+                            <label className="block text-white/80 mb-3 font-semibold">
+                                2. Elige un escenario:
+                            </label>
                             <div className="grid grid-cols-2 gap-3">
                                 {scenarios.map((s) => (
                                     <button
                                         key={s.id}
                                         onClick={() => setScenario(s.id)}
                                         className={`p-4 rounded-xl border-2 transition-all ${scenario === s.id
-                                                ? 'bg-purple-600/20 border-purple-500 text-white'
-                                                : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                                ? 'border-purple-500 bg-purple-500/30 shadow-lg shadow-purple-500/50'
+                                                : 'border-white/10 bg-white/5 hover:bg-white/10'
                                             }`}
                                     >
                                         <div className="text-3xl mb-2">{s.emoji}</div>
-                                        <div className="text-sm font-medium">{s.name}</div>
+                                        <div className="text-white text-sm font-bold">{s.name}</div>
                                     </button>
                                 ))}
                             </div>
                         </div>
 
+                        {/* Generate button */}
                         <button
                             onClick={generatePhoto}
                             disabled={generating || photos.length === 0}
-                            className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-700 text-white py-4 rounded-2xl font-bold text-lg transition-all shadow-lg shadow-purple-600/20 flex items-center justify-center gap-3"
+                            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {generating ? (
                                 <>
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                    Generando Magia...
+                                    <motion.div
+                                        animate={{ rotate: 360 }}
+                                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                    >
+                                        <Sparkles className="w-5 h-5" />
+                                    </motion.div>
+                                    Generando magia...
                                 </>
                             ) : (
                                 <>
-                                    <Wand2 size={24} />
-                                    Generar Foto Navideña
+                                    <Wand2 className="w-5 h-5" />
+                                    Generar Foto con IA
                                 </>
                             )}
                         </button>
 
-                        {/* Engine Info */}
-                        <div className="bg-blue-900/20 border border-blue-500/30 rounded-2xl p-6">
-                            <h3 className="font-bold text-blue-400 mb-3 flex items-center gap-2">
-                                <Sparkles size={18} />
-                                Tecnología IA Multi-Engine
-                            </h3>
-                            <ul className="space-y-2 text-sm text-gray-300">
-                                <li>🤖 <strong>Google AI</strong> (Gemini 2.0 Flash) - Gratis</li>
-                                <li>🎥 <strong>Higgsfield</strong> (Nano Banana) - Premium</li>
-                                <li>🤗 <strong>Hugging Face</strong> (SDXL) - Fallback</li>
-                            </ul>
-                            <p className="text-xs text-gray-500 mt-3">
-                                El sistema elige automáticamente el mejor engine disponible
-                            </p>
-                        </div>
-                    </div>
+                        <p className="text-white/40 text-xs mt-3 text-center">
+                            Fotos gratis incluyen marca de agua. Actualiza a Pro para descargas sin límites.
+                        </p>
+                    </motion.div>
 
-                    {/* Right: Result */}
-                    <div className="bg-[#111] border border-white/10 rounded-3xl p-8">
-                        <h2 className="text-2xl font-bold mb-6">3. Resultado</h2>
+                    {/* Panel derecho: Resultado */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="bg-gradient-to-br from-blue-900/40 to-purple-900/40 backdrop-blur-xl p-8 rounded-3xl border border-white/10"
+                    >
+                        <h2 className="text-2xl font-bold text-white mb-6">
+                            Resultado
+                        </h2>
 
-                        {!generatedImage ? (
-                            <div className="aspect-square bg-white/5 rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-gray-500">
-                                <Sparkles size={64} className="mb-4 opacity-20" />
-                                <p className="text-lg">Tu foto mágica aparecerá aquí</p>
+                        {!generatedImage && !generating && (
+                            <div className="flex items-center justify-center h-96 border-2 border-dashed border-white/20 rounded-2xl">
+                                <div className="text-center text-white/40">
+                                    <Sparkles className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                                    <p>Tu foto generada aparecerá aquí</p>
+                                </div>
                             </div>
-                        ) : (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="space-y-4"
-                            >
-                                <div className="relative aspect-square rounded-2xl overflow-hidden border-2 border-purple-500/30">
+                        )}
+
+                        {generating && (
+                            <div className="flex items-center justify-center h-96 border-2 border-dashed border-purple-500/50 rounded-2xl bg-purple-500/10">
+                                <div className="text-center">
+                                    <motion.div
+                                        animate={{ rotate: 360, scale: [1, 1.2, 1] }}
+                                        transition={{ duration: 2, repeat: Infinity }}
+                                        className="text-6xl mb-4"
+                                    >
+                                        ✨
+                                    </motion.div>
+                                    <p className="text-white font-bold text-lg">Generando con IA avanzada...</p>
+                                    <p className="text-white/60 text-sm mt-2">Esto puede tomar 10-30 segundos</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {generatedImage && !generating && (
+                            <div className="space-y-4">
+                                <div className="relative rounded-2xl overflow-hidden border-2 border-white/20">
                                     <img
                                         src={generatedImage}
                                         alt="Generated"
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-auto"
                                     />
-                                    {/* Watermark indicator */}
-                                    <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm px-3 py-1 rounded-full text-xs text-white">
-                                        🎨 PetMatch AI
-                                    </div>
+
+                                    {/* Marca de agua overlay si no es Pro */}
+                                    {!isPro && (
+                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                            <div className="bg-black/60 backdrop-blur-sm px-6 py-3 rounded-xl border border-white/20 transform rotate-[-15deg]">
+                                                <p className="text-white font-black text-2xl">PetMatch.fun</p>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
-                                <div className="flex gap-3">
-                                    <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2">
-                                        <Download size={18} />
-                                        Descargar
+                                {/* Download button */}
+                                {isPro ? (
+                                    <button
+                                        onClick={downloadPhoto}
+                                        className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:scale-105 transition-transform"
+                                    >
+                                        <Download className="w-5 h-5" />
+                                        Descargar sin Marca de Agua
                                     </button>
-                                    <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2">
-                                        <Share2 size={18} />
-                                        Compartir
+                                ) : (
+                                    <button
+                                        onClick={() => window.location.href = '/pricing'}
+                                        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:scale-105 transition-transform"
+                                    >
+                                        <Lock className="w-5 h-5" />
+                                        Actualiza a Pro para Descargar
                                     </button>
-                                </div>
+                                )}
 
-                                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 text-center">
-                                    <p className="text-yellow-400 text-sm">
-                                        💎 <strong>Actualiza a Premium</strong> para remover la marca de agua
-                                    </p>
-                                </div>
-                            </motion.div>
+                                <button
+                                    onClick={() => {
+                                        setGeneratedImage(null);
+                                        setPhotos([]);
+                                    }}
+                                    className="w-full bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-xl font-bold transition-colors border border-white/10"
+                                >
+                                    Generar Otra Foto
+                                </button>
+                            </div>
                         )}
+                    </motion.div>
+                </div>
+
+                {/* Features */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                    <div className="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10 text-center">
+                        <div className="text-4xl mb-3">🎨</div>
+                        <h3 className="text-white font-bold mb-2">IA Avanzada</h3>
+                        <p className="text-white/60 text-sm">Resultados ultra-realistas en segundos</p>
+                    </div>
+                    <div className="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10 text-center">
+                        <div className="text-4xl mb-3">⚡</div>
+                        <h3 className="text-white font-bold mb-2">Super Rápido</h3>
+                        <p className="text-white/60 text-sm">Generación en 10-30 segundos</p>
+                    </div>
+                    <div className="bg-white/5 backdrop-blur-xl p-6 rounded-2xl border border-white/10 text-center">
+                        <div className="text-4xl mb-3">📥</div>
+                        <h3 className="text-white font-bold mb-2">Alta Calidad</h3>
+                        <p className="text-white/60 text-sm">Descargas en 8K Ultra-HD</p>
                     </div>
                 </div>
             </div>

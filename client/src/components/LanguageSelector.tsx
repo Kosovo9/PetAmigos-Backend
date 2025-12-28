@@ -11,16 +11,26 @@ export default function LanguageSelector() {
     const pathname = usePathname();
 
     const languages = [
-        { code: 'en', name: 'English', flag: '🇺🇸', nativeName: 'English' },
-        { code: 'es', name: 'Spanish', flag: '🇪🇸', nativeName: 'Español' },
-        { code: 'pt', name: 'Portuguese', flag: '🇧🇷', nativeName: 'Português' },
-        { code: 'de', name: 'German', flag: '🇩🇪', nativeName: 'Deutsch' },
-        { code: 'it', name: 'Italian', flag: '🇮🇹', nativeName: 'Italiano' },
-        { code: 'zh', name: 'Chinese', flag: '🇨🇳', nativeName: '中文' },
-        { code: 'ja', name: 'Japanese', flag: '🇯🇵', nativeName: '日本語' },
-        { code: 'fr', name: 'French', flag: '🇫🇷', nativeName: 'Français' },
-        { code: 'ru', name: 'Russian', flag: '🇷🇺', nativeName: 'Русский' },
-        { code: 'ko', name: 'Korean', flag: '🇰🇷', nativeName: '한국어' },
+        { code: 'en-US', name: 'English (US)', flag: '🇺🇸', nativeName: 'English (US)' },
+        { code: 'en-GB', name: 'English (UK)', flag: '🇬🇧', nativeName: 'English (UK)' },
+        { code: 'es-MX', name: 'Spanish (MX)', flag: '🇲🇽', nativeName: 'Español (MX)' },
+        { code: 'es-ES', name: 'Spanish (ES)', flag: '🇪🇸', nativeName: 'Español (ES)' },
+        { code: 'pt-BR', name: 'Portuguese (BR)', flag: '🇧🇷', nativeName: 'Português (BR)' },
+        { code: 'fr-FR', name: 'French (FR)', flag: '🇫🇷', nativeName: 'Français (FR)' },
+        { code: 'de-DE', name: 'German (DE)', flag: '🇩🇪', nativeName: 'Deutsch (DE)' },
+        { code: 'ja-JP', name: 'Japanese (JP)', flag: '🇯🇵', nativeName: '日本語 (JP)' },
+        { code: 'it-IT', name: 'Italian (IT)', flag: '🇮🇹', nativeName: 'Italiano (IT)' },
+        { code: 'zh-CN', name: 'Chinese (CN)', flag: '🇨🇳', nativeName: '简体中文' },
+        { code: 'ru-RU', name: 'Russian (RU)', flag: '🇷🇺', nativeName: 'Русский (RU)' },
+        { code: 'ko-KR', name: 'Korean (KR)', flag: '🇰🇷', nativeName: '한국어 (KR)' },
+        { code: 'ar-SA', name: 'Arabic (SA)', flag: '🇸🇦', nativeName: 'العربية (SA)' },
+        { code: 'es-AR', name: 'Spanish (AR)', flag: '🇦🇷', nativeName: 'Español (AR)' },
+        { code: 'es-CO', name: 'Spanish (CO)', flag: '🇨🇴', nativeName: 'Español (CO)' },
+        { code: 'en-CA', name: 'English (CA)', flag: '🇨🇦', nativeName: 'English (CA)' },
+        { code: 'en-AU', name: 'English (AU)', flag: '🇦🇺', nativeName: 'English (AU)' },
+        { code: 'fr-CA', name: 'French (CA)', flag: '🇨🇦', nativeName: 'Français (CA)' },
+        { code: 'pt-PT', name: 'Portuguese (PT)', flag: '🇵🇹', nativeName: 'Português (PT)' },
+        { code: 'es-CL', name: 'Spanish (CL)', flag: '🇨🇱', nativeName: 'Español (CL)' }
     ];
 
     const getCurrentLanguage = () => {
@@ -164,7 +174,7 @@ export default function LanguageSelector() {
                         {/* Footer */}
                         <div className="mt-4 pt-4 border-t border-white/10">
                             <p className="text-white/40 text-xs text-center">
-                                🌍 10 Languages • Universal Access
+                                🌍 20 Regional Locales • Universal Access
                             </p>
                         </div>
                     </motion.div>

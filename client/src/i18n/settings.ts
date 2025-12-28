@@ -1,14 +1,10 @@
 export const locales = [
-    'en', // English (Global)
-    'es', // Spanish (LATAM/Spain)
-    'fr', // French (Europe/Canada)
-    'de', // German (High purchasing power)
-    'pt', // Portuguese (Brazil - Huge social market)
-    'ja', // Japanese (Premium pet culture)
-    'it', // Italian (Fashion & Style)
-    'zh', // Chinese (Massive market)
-    'ru', // Russian (Strong community)
-    'ko'  // Korean (Trendsetters)
+    'en', 'es', 'fr', 'de', 'pt', 'ja', 'it', 'zh', 'ru', 'ko', 'ar',
+    'en-US', 'en-GB', 'en-CA', 'en-AU',
+    'es-MX', 'es-ES', 'es-AR', 'es-CO', 'es-CL',
+    'pt-BR', 'pt-PT',
+    'fr-FR', 'fr-CA',
+    'de-DE', 'it-IT', 'ja-JP', 'ko-KR', 'ru-RU', 'zh-CN', 'ar-SA'
 ] as const;
 
 export type Locale = (typeof locales)[number];

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Phone, Calendar, Search, PlusCircle, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { config } from '../../lib/config';
 
 export default function LostPetsPage() {
     const [pets, setPets] = useState([]);
@@ -25,7 +26,7 @@ export default function LostPetsPage() {
 
     const fetchPets = async () => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lost-pets`);
+            const res = await fetch(`${config.apiUrl}/lost-pets`);
             const data = await res.json();
             if (data.success) {
                 setPets(data.data);
@@ -48,7 +49,7 @@ export default function LostPetsPage() {
                 images: ['https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=500&q=80'] // Placeholder image
             };
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/lost-pets`, {
+            const res = await fetch(`${config.apiUrl}/lost-pets`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

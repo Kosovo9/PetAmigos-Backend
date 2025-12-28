@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Battery, Utensils, Sparkles, Activity, Zap } from 'lucide-react';
+import { config } from '../lib/config';
 
 interface DigitalTwinProps {
     petId: string;
@@ -27,7 +28,7 @@ export default function DigitalTwinAvatar({ petId, petName, species }: DigitalTw
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/digital-twin/${petId}`, {
+            const response = await fetch(`${config.apiUrl}/digital-twin/${petId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
@@ -41,7 +42,7 @@ export default function DigitalTwinAvatar({ petId, petName, species }: DigitalTw
     const performAction = async (action: string) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/digital-twin/${petId}/action`, {
+            const response = await fetch(`${config.apiUrl}/digital-twin/${petId}/action`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

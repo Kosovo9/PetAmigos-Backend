@@ -2,6 +2,7 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { config } from '../../../lib/config';
 
 function PaymentSuccessContent() {
     const search = useSearchParams();
@@ -12,8 +13,7 @@ function PaymentSuccessContent() {
     useEffect(() => {
         if (sessionId && token) {
             // Refresh user data to show updated credits
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-            fetch(`${apiUrl}/api/auth/me`, {
+            fetch(`${config.apiUrl}/auth/me`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
                 .then((r) => r.json())

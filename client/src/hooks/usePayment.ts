@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from './useAuth';
+import { config } from '../lib/config';
 
 export const usePayment = () => {
     const { token } = useAuth();
@@ -10,8 +11,8 @@ export const usePayment = () => {
         setLoading(true);
         setError(null);
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-            const res = await fetch(`${apiUrl}/api/pay/create-checkout`, {
+            const apiUrl = config.apiUrl;
+            const res = await fetch(`${apiUrl}/pay/create-checkout`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

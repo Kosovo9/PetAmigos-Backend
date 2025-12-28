@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Sparkles, Wand2, Download, Lock, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { config } from '../../lib/config';
 
 export default function AIPhotoGenerator() {
     const [photos, setPhotos] = useState<File[]>([]);
@@ -47,7 +48,7 @@ export default function AIPhotoGenerator() {
             formData.append('style', 'christmas');
             formData.append('quality', '8K');
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/photos/generate`, {
+            const response = await fetch(`${config.apiUrl}/photos/generate`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -154,8 +155,8 @@ export default function AIPhotoGenerator() {
                                         key={s.id}
                                         onClick={() => setScenario(s.id)}
                                         className={`p-4 rounded-xl border-2 transition-all ${scenario === s.id
-                                                ? 'border-purple-500 bg-purple-500/30 shadow-lg shadow-purple-500/50'
-                                                : 'border-white/10 bg-white/5 hover:bg-white/10'
+                                            ? 'border-purple-500 bg-purple-500/30 shadow-lg shadow-purple-500/50'
+                                            : 'border-white/10 bg-white/5 hover:bg-white/10'
                                             }`}
                                     >
                                         <div className="text-3xl mb-2">{s.emoji}</div>

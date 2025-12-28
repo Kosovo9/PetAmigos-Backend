@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Heart, Plus, Filter } from 'lucide-react';
 import LoveStoryCard from '@/components/LoveStoryCard';
 import Link from 'next/link';
+import { config } from '../../lib/config';
 
 export default function LoveStoriesPage() {
     const [stories, setStories] = useState([]);
@@ -28,7 +29,7 @@ export default function LoveStoriesPage() {
                 params.append('species', filter);
             }
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/love-stories?${params}`);
+            const response = await fetch(`${config.apiUrl}/love-stories?${params}`);
             const data = await response.json();
 
             setStories(data.stories || []);
@@ -48,7 +49,7 @@ export default function LoveStoriesPage() {
                 return;
             }
 
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/love-stories/${storyId}/like`, {
+            await fetch(`${config.apiUrl}/love-stories/${storyId}/like`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -64,7 +65,7 @@ export default function LoveStoriesPage() {
 
     const handleShare = async (storyId: string) => {
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/love-stories/${storyId}/share`, {
+            await fetch(`${config.apiUrl}/love-stories/${storyId}/share`, {
                 method: 'POST'
             });
 
@@ -108,8 +109,8 @@ export default function LoveStoriesPage() {
                             key={species}
                             onClick={() => setFilter(species)}
                             className={`px-6 py-3 rounded-full font-semibold transition-all ${filter === species
-                                    ? 'bg-pink-500 text-white shadow-[0_0_20px_rgba(236,72,153,0.6)]'
-                                    : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                                ? 'bg-pink-500 text-white shadow-[0_0_20px_rgba(236,72,153,0.6)]'
+                                : 'bg-white/10 text-gray-300 hover:bg-white/20'
                                 }`}
                         >
                             {species === 'all' ? '🌟 Todas' :

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DigitalTwinAvatar from '@/components/DigitalTwinAvatar';
 import Link from 'next/link';
+import { config } from '../../lib/config';
 
 export default function MyPetPage() {
     const [pets, setPets] = useState([]);
@@ -23,7 +24,7 @@ export default function MyPetPage() {
                 return;
             }
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pets/my-pets`, {
+            const response = await fetch(`${config.apiUrl}/pets/my-pets`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -95,8 +96,8 @@ export default function MyPetPage() {
                                         key={pet._id}
                                         onClick={() => setSelectedPet(pet)}
                                         className={`flex items-center gap-3 px-4 py-2 rounded-xl border transition-all ${selectedPet._id === pet._id
-                                                ? 'bg-purple-600/20 border-purple-500 text-white'
-                                                : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                            ? 'bg-purple-600/20 border-purple-500 text-white'
+                                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
                                             }`}
                                     >
                                         <div className="w-8 h-8 rounded-full bg-gray-700 overflow-hidden">

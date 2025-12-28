@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { MessageCircle, Send, MapPin, DollarSign, Image, MoreVertical, Phone, Video, Search, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { config } from '../../lib/config';
 
 export default function ChatPage() {
     const [conversations, setConversations] = useState<any[]>([]);
@@ -38,7 +39,7 @@ export default function ChatPage() {
                 return;
             }
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/conversations`, {
+            const res = await fetch(`${config.apiUrl}/chat/conversations`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -57,7 +58,7 @@ export default function ChatPage() {
             const token = localStorage.getItem('token');
             if (!token) return; // Use mock if no token
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/${chatId}`, {
+            const res = await fetch(`${config.apiUrl}/chat/${chatId}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -87,7 +88,7 @@ export default function ChatPage() {
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/send`, {
+            await fetch(`${config.apiUrl}/chat/send`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

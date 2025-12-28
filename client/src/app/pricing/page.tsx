@@ -3,6 +3,7 @@
 import React from 'react';
 import { Check, Sparkles, Zap, Globe } from 'lucide-react';
 import Link from 'next/link';
+import { config } from '../../lib/config';
 
 export default function PricingPage() {
     const handleCheckout = async (type: string) => {
@@ -13,7 +14,7 @@ export default function PricingPage() {
                 return;
             }
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/pay/create-checkout`, {
+            const res = await fetch(`${config.apiUrl}/pay/create-checkout`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

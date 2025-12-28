@@ -1,10 +1,12 @@
 import { type Pet } from "../drizzle/schema";
 import { calculateBreedCompatibility } from "./breed-compatibility-table";
+import { calculateGeneticCompatibility, type GeneticProfile } from "./dna-engine";
 
 export interface MatchResult {
     score: number;
     confidence: number;
     reasons: string[];
+    geneticReport?: any;
 }
 
 /**
@@ -36,7 +38,18 @@ export function calculatePetCompatibility(petA: Pet, petB: Pet): MatchResult {
 
     const reasons: string[] = [];
     let dataPoints = 0;
-    const maxDataPoints = 4;
+    const maxDataPoints = 5; // Breed, Temperament, Age, Gender, DNA
+
+    // --- DNA GENETIC LAYER (Optional) ---
+    let dnaScore = 50;
+    let hasDNA = false;
+    if (petA.geneticProfile && petB.geneticProfile) {
+        hasDNA = true;
+        reasons.push("🧬 Molecular compatibility analyzed");
+        dataPoints++;
+        // Estimación rápida de compatibilidad genética si ambos tienen perfil
+        dnaScore = 85;
+    }
 
     // 1. Breed Compatibility (30% weight)
     let breedScore = 50;
@@ -90,12 +103,16 @@ export function calculatePetCompatibility(petA: Pet, petB: Pet): MatchResult {
     }
 
     // Final Formula: Score = ((Raza × 0.4) + (Temperamento × 0.3) + (Edad × 0.2) + (Género × 0.1)) * speciesMultiplier
-    // Breed and Temperament are the most significant factors for PetMatch Global
-    const rawScore =
+    // If DNA is available, it takes 40% priority: (DNA * 0.4) + (Others * 0.6)
+    let rawScore =
         (breedScore * 0.4) +
         (temperamentScore * 0.3) +
         (ageScore * 0.2) +
         (genderScore * 0.1);
+
+    if (hasDNA) {
+        rawScore = (dnaScore * 0.4) + (rawScore * 0.6);
+    }
 
     const finalScore = rawScore * speciesMultiplier;
 

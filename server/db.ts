@@ -6,6 +6,7 @@ import {
   InsertPet, InsertLoveStory, InsertChatMessage, InsertHealthRecord, InsertMarketplaceListing
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
+export { analyzePetDNA, calculateGeneticCompatibility } from "./dna-engine";
 
 let _db: ReturnType<typeof drizzle> | null = null;
 

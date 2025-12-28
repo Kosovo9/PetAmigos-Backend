@@ -50,6 +50,8 @@ export const pets = mysqlTable("pets", {
   photos: json("photos"),
   pedigreeData: json("pedigreeData"),
   healthStatus: json("healthStatus"),
+  geneticProfile: json("geneticProfile"),
+  behavioralProfile: json("behavioralProfile"),
   avatarUrl: varchar("avatarUrl", { length: 512 }),
   personalityVector: json("personalityVector"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

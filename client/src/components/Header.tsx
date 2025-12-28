@@ -48,6 +48,10 @@ export default function Header() {
                             <DollarSign className="w-4 h-4 text-yellow-400" />
                             Precios
                         </Link>
+                        <Link href="/dna" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-emerald-400" />
+                            DNA Matching (New)
+                        </Link>
                     </nav>
 
                     {/* Auth Buttons */}

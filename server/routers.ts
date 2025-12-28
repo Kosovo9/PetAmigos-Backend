@@ -288,6 +288,49 @@ export const appRouter = router({
       { id: "enterprise", price: 49.99, features: ["API Access", "Verified Badge"] },
     ]),
   }),
+
+  // --- DNA GENOMICS ENGINE ---
+  dna: router({
+    uploadDNATest: protectedProcedure
+      .input(z.object({
+        petId: z.number(),
+        testProvider: z.enum(["embark", "wisdom_panel", "other"]),
+        rawData: z.any() // JSON content of the test
+      }))
+      .mutation(async ({ input }) => {
+        const geneticProfile = await db.analyzePetDNA(
+          input.petId,
+          input.rawData,
+          input.testProvider
+        );
+
+        await db.updatePet(input.petId, { geneticProfile: geneticProfile as any });
+
+        return { success: true, profile: geneticProfile };
+      }),
+
+    getCompatibilityReport: protectedProcedure
+      .input(z.object({
+        petAId: z.number(),
+        petBId: z.number(),
+      }))
+      .query(async ({ input }) => {
+        const petA = await db.getPetById(input.petAId);
+        const petB = await db.getPetById(input.petBId);
+
+        if (!petA?.geneticProfile || !petB?.geneticProfile) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Both pets must have DNA profiles uploaded for this analysis"
+          });
+        }
+
+        return db.calculateGeneticCompatibility(
+          petA.geneticProfile as any,
+          petB.geneticProfile as any
+        );
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

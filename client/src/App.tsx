@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import PetDiscovery from "./pages/PetDiscovery";
 import Marketplace from "./pages/Marketplace";
 import ChatPage from "./pages/ChatPage";
+import DNAMatching from "./pages/DNAMatching";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -17,6 +18,7 @@ function Router() {
       <Route path={"/discovery"} component={PetDiscovery} />
       <Route path={"/marketplace"} component={Marketplace} />
       <Route path={"/chat"} component={ChatPage} />
+      <Route path={"/dna"} component={DNAMatching} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

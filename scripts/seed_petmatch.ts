@@ -1,10 +1,15 @@
-import { getDb } from "../server/db";
-import { users, pets } from "../drizzle/schema";
+import "dotenv/config";
+import { users, pets } from "../drizzle/schema.ts";
 import { nanoid } from "nanoid";
 
 async function seed() {
     console.log("🚀 Starting 1000X Global PetMatch Seeding...");
+
+    // Use dynamic import to avoid static resolution issues
+    const dbModule = await import("../server/db.ts");
+    const getDb = dbModule.getDb;
     const db = await getDb();
+
     if (!db) {
         console.error("❌ Database connection failed. Set DATABASE_URL.");
         process.exit(1);
@@ -40,7 +45,7 @@ async function seed() {
             coordinates: [loc.lng + (Math.random() - 0.5) * 0.1, loc.lat + (Math.random() - 0.5) * 0.1]
         };
 
-        const [result]: any = await db.insert(users).values({
+        const result: any = await db.insert(users).values({
             openId,
             name: `Global Owner ${i}`,
             email: `owner${i}@petmatch.global`,
@@ -48,18 +53,28 @@ async function seed() {
             role: "user"
         } as any);
 
-        const userId = result.insertId;
+        // Result handling for MySQL2
+        const userId = result[0]?.insertId || result.insertId;
+        if (!userId) {
+            console.warn(`⚠️ Failed to get userId for owner ${i}, skipping pets.`);
+            continue;
+        }
         insertedUsers.push({ id: userId, loc: userLoc });
     }
 
     // Create 50 Pets
-    console.log("🐾 Creating 50 Diversified Pets...");
+    console.log(`🐾 Creating 50 Diversified Pets (Owners: ${insertedUsers.length})...`);
+    if (insertedUsers.length === 0) {
+        console.error("❌ No users were created. Check DB permissions.");
+        process.exit(1);
+    }
+
     const petNames = [
         "Max", "Luna", "Rocky", "Bella", "Charlie", "Molly", "Buddy", "Lucy", "Cooper", "Daisy",
         "Milo", "Ginger", "Simba", "Nala", "Oliver", "Chloe", "Leo", "Mia", "Jack", "Sophie",
         "Toby", "Penny", "Bear", "Ruby", "Duke", "Zoe", "Teddy", "Lily", "Tucker", "Lola",
         "Cleo", "Jasper", "Willow", "Felix", "Smokey", "Oscar", "Sasha", "Zeus", "Athena",
-        "Apollo", "Diana", "Bruno", "Coco", "Sparky", "Mittens", "Whiskers", "Shadow", "Rex", "Goldie"
+        "Apollo", "Diana", "Bruno", "Coco", "Sparky", "Mittens", "Whiskers", "Shadow", "Rex", "Goldie", "Rusty"
     ];
 
     for (let i = 0; i < 50; i++) {
@@ -83,7 +98,7 @@ async function seed() {
             breed: breed,
             gender: Math.random() > 0.5 ? "male" : "female",
             location: JSON.stringify(petLoc),
-            bio: `I am a happy ${breed} from ${locations[owner.id % locations.length].name}! I love making new friends.`,
+            bio: `I am a happy ${breed} from ${locations[owner.id % locations.length]?.name || 'Unknown'}! I love making new friends.`,
             personalityVector: [Math.random(), Math.random(), Math.random(), Math.random(), Math.random()],
             avatarUrl: `https://loremflickr.com/400/400/${isDog ? 'dog' : 'cat'},${breed.replace(/\s/g, '')}`
         } as any);

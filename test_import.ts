@@ -1,2 +1,9 @@
-import { TEST_VAL } from "file:///C:/Pet%20Amigos%20final/PetAmigos-Backend/server/breed-compatibility-table.ts";
-console.log("TEST_VAL:", TEST_VAL);
+async function test() {
+    try {
+        const dbMod = await import("./server/db.ts");
+        console.log("Keys in db module:", Object.keys(dbMod));
+    } catch (error) {
+        console.error("Import failed:", error);
+    }
+}
+test();

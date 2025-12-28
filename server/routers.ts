@@ -8,7 +8,7 @@ import {
   loveStories, playdates, marketplaceListings, subscriptions, chatMessages
 } from "../drizzle/schema";
 import { calculatePetCompatibility } from "./matching";
-import { searchBreeds, calculateBreedCompatibility } from "./breed-compatibility-table";
+import { searchBreeds, calculateBreedCompatibility, getCompatibleBreeds } from "./breed-compatibility-table";
 import { COOKIE_NAME } from "../shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 
@@ -195,6 +195,26 @@ export const appRouter = router({
       .input(z.object({ breedA: z.string(), breedB: z.string() }))
       .query(({ input }) => {
         return calculateBreedCompatibility(input.breedA, input.breedB);
+      }),
+    getSuggestions: protectedProcedure
+      .input(z.object({ petId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const pet = await db.getPetById(input.petId);
+        if (!pet || !pet.breed) throw new TRPCError({ code: "NOT_FOUND" });
+
+        const compatibleBreeds = getCompatibleBreeds(pet.breed, 70);
+        const breedNames = compatibleBreeds.map(b => b.breed);
+
+        const d = await db.getDb();
+        if (!d) return [];
+
+        return d.select()
+          .from(pets)
+          .where(and(
+            inArray(pets.breed, breedNames),
+            ne(pets.id, pet.id)
+          ))
+          .limit(10);
       }),
   }),
 

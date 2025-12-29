@@ -224,3 +224,185 @@ export const chatMessages = mysqlTable("chatMessages", {
 
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertChatMessage = typeof chatMessages.$inferInsert;
+
+// --- SOCIAL ECOSYSTEM (Facebook Features) ---
+
+export const posts = mysqlTable("posts", {
+  id: int("id").autoincrement().primaryKey(),
+  authorId: int("authorId").notNull(),
+  content: text("content").notNull(),
+  mediaUrls: json("mediaUrls"), // Store as string array
+  likesCount: int("likesCount").default(0),
+  commentsCount: int("commentsCount").default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Post = typeof posts.$inferSelect;
+export type InsertPost = typeof posts.$inferInsert;
+
+export const comments = mysqlTable("comments", {
+  id: int("id").autoincrement().primaryKey(),
+  postId: int("postId").notNull(),
+  authorId: int("authorId").notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Comment = typeof comments.$inferSelect;
+export type InsertComment = typeof comments.$inferInsert;
+
+// --- MESSAGING SYSTEM ---
+
+export const conversations = mysqlTable("conversations", {
+  id: int("id").autoincrement().primaryKey(),
+  participantIds: json("participantIds").notNull(), // Array of user IDs
+  lastMessageAt: timestamp("lastMessageAt").defaultNow(),
+});
+
+export type Conversation = typeof conversations.$inferSelect;
+export type InsertConversation = typeof conversations.$inferInsert;
+
+export const messages = mysqlTable("messages", {
+  id: int("id").autoincrement().primaryKey(),
+  conversationId: int("conversationId").notNull(),
+  senderId: int("senderId").notNull(),
+  text: text("text"),
+  mediaUrls: json("mediaUrls"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Message = typeof messages.$inferSelect;
+export type InsertMessage = typeof messages.$inferInsert;
+
+// --- ADVANCED MARKETPLACE ---
+
+export const products = mysqlTable("products", {
+  id: int("id").autoincrement().primaryKey(),
+  sellerId: int("sellerId").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  price: int("price").notNull(), // in cents
+  currency: varchar("currency", { length: 3 }).default("USD"),
+  mediaUrls: json("mediaUrls"),
+  stock: int("stock").default(1),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Product = typeof products.$inferSelect;
+export type InsertProduct = typeof products.$inferInsert;
+
+export const orders = mysqlTable("orders", {
+  id: int("id").autoincrement().primaryKey(),
+  buyerId: int("buyerId").notNull(),
+  total: int("total").notNull(),
+  currency: varchar("currency", { length: 3 }).default("USD"),
+  status: varchar("status", { length: 64 }).default("pending"),
+  paymentId: varchar("paymentId", { length: 255 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Order = typeof orders.$inferSelect;
+export type InsertOrder = typeof orders.$inferInsert;
+
+// --- VIDEO & REELS (TikTok/Instagram Features) ---
+
+export const videos = mysqlTable("videos", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  hlsUrl: varchar("hlsUrl", { length: 512 }), // m3u8 path
+  thumbnailUrl: varchar("thumbnailUrl", { length: 512 }),
+  viewCount: int("viewCount").default(0),
+  likeCount: int("likeCount").default(0),
+  isReel: boolean("isReel").default(false),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Video = typeof videos.$inferSelect;
+export type InsertVideo = typeof videos.$inferInsert;
+
+export const stories = mysqlTable("stories", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(),
+  mediaUrl: varchar("mediaUrl", { length: 512 }).notNull(),
+  type: varchar("type", { length: 20 }).notNull(), // image | video
+  expiresAt: timestamp("expiresAt").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Story = typeof stories.$inferSelect;
+export type InsertStory = typeof stories.$inferInsert;
+
+export const creatorAnalytics = mysqlTable("creatorAnalytics", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  date: varchar("date", { length: 10 }).notNull(), // YYYY-MM-DD
+  views: int("views").default(0),
+  likes: int("likes").default(0),
+  earnings: int("earnings").default(0),
+});
+
+export type CreatorAnalytic = typeof creatorAnalytics.$inferSelect;
+export type InsertCreatorAnalytic = typeof creatorAnalytics.$inferInsert;
+
+// --- NOTIFICATIONS ---
+
+export const notifications = mysqlTable("notifications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  type: varchar("type", { length: 64 }).notNull(), // like, comment, message, match
+  title: varchar("title", { length: 255 }).notNull(),
+  body: text("body").notNull(),
+  read: boolean("read").default(false),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof notifications.$inferInsert;
+
+// --- RELATIONS ---
+
+export const postsRelations = relations(posts, ({ one, many }) => ({
+  author: one(users, { fields: [posts.authorId], references: [users.id] }),
+  comments: many(comments),
+}));
+
+export const commentsRelations = relations(comments, ({ one }) => ({
+  post: one(posts, { fields: [comments.postId], references: [posts.id] }),
+  author: one(users, { fields: [comments.authorId], references: [users.id] }),
+}));
+
+export const conversationsRelations = relations(conversations, ({ many }) => ({
+  messages: many(messages),
+}));
+
+export const messagesRelations = relations(messages, ({ one }) => ({
+  conversation: one(conversations, { fields: [messages.conversationId], references: [conversations.id] }),
+  sender: one(users, { fields: [messages.senderId], references: [users.id] }),
+}));
+
+export const productsRelations = relations(products, ({ one }) => ({
+  seller: one(users, { fields: [products.sellerId], references: [users.id] }),
+}));
+
+export const ordersRelations = relations(orders, ({ one }) => ({
+  buyer: one(users, { fields: [orders.buyerId], references: [users.id] }),
+}));
+
+export const videosRelations = relations(videos, ({ one }) => ({
+  owner: one(users, { fields: [videos.ownerId], references: [users.id] }),
+}));
+
+export const storiesRelations = relations(stories, ({ one }) => ({
+  owner: one(users, { fields: [stories.ownerId], references: [users.id] }),
+}));
+
+export const creatorAnalyticsRelations = relations(creatorAnalytics, ({ one }) => ({
+  user: one(users, { fields: [creatorAnalytics.userId], references: [users.id] }),
+}));
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, { fields: [notifications.userId], references: [users.id] }),
+}));

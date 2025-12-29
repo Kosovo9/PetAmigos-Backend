@@ -9,6 +9,8 @@ import PetDiscovery from "./pages/PetDiscovery";
 import Marketplace from "./pages/Marketplace";
 import ChatPage from "./pages/ChatPage";
 import DNAMatching from "./pages/DNAMatching";
+import PetSocialFeed from "./pages/PetSocialFeed";
+import PetReels from "./pages/PetReels";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -19,6 +21,8 @@ function Router() {
       <Route path={"/marketplace"} component={Marketplace} />
       <Route path={"/chat"} component={ChatPage} />
       <Route path={"/dna"} component={DNAMatching} />
+      <Route path={"/feed"} component={PetSocialFeed} />
+      <Route path={"/reels"} component={PetReels} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

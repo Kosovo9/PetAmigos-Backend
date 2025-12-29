@@ -50,7 +50,15 @@ export default function Header() {
                         </Link>
                         <Link href="/dna" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
                             <Sparkles className="w-4 h-4 text-emerald-400" />
-                            DNA Matching (New)
+                            DNA Matching
+                        </Link>
+                        <Link href="/feed" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
+                            <Users className="w-4 h-4 text-blue-400" />
+                            Comunidad
+                        </Link>
+                        <Link href="/reels" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
+                            Reels
                         </Link>
                     </nav>
 

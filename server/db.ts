@@ -182,3 +182,77 @@ export async function getUserSubscription(userId: number) {
   const result = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).limit(1);
   return result[0];
 }
+// --- SOCIAL & FEED (Facebook Style) ---
+
+export async function createPost(data: any) {
+  const db = await getDb();
+  if (!db) return;
+  return db.insert(posts).values(data);
+}
+
+export async function getFeedPosts(limit: number, offset: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select()
+    .from(posts)
+    .orderBy(desc(posts.createdAt))
+    .limit(limit)
+    .offset(offset);
+}
+
+export async function likePost(postId: number) {
+  const db = await getDb();
+  if (!db) return;
+  return db.update(posts)
+    .set({ likesCount: sql`likesCount + 1` })
+    .where(eq(posts.id, postId));
+}
+
+// --- VIDEO & REELS (TikTok Style) ---
+
+export async function createVideo(data: any) {
+  const db = await getDb();
+  if (!db) return;
+  return db.insert(videos).values(data);
+}
+
+export async function getTrendingVideos(limit: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select()
+    .from(videos)
+    .where(eq(videos.isReel, true))
+    .orderBy(desc(videos.viewCount))
+    .limit(limit);
+}
+
+// --- ADVANCED MARKETPLACE & ORDERS ---
+
+export async function createProduct(data: any) {
+  const db = await getDb();
+  if (!db) return;
+  return db.insert(products).values(data);
+}
+
+export async function createOrder(data: any) {
+  const db = await getDb();
+  if (!db) return;
+  return db.insert(orders).values(data);
+}
+
+// --- NOTIFICATIONS ---
+
+export async function createNotification(data: any) {
+  const db = await getDb();
+  if (!db) return;
+  return db.insert(notifications).values(data);
+}
+
+export async function getNotifications(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select()
+    .from(notifications)
+    .where(eq(notifications.userId, userId))
+    .orderBy(desc(notifications.createdAt));
+}

@@ -331,6 +331,53 @@ export const appRouter = router({
         );
       }),
   }),
+
+  // --- SOCIAL FEED 2.0 (Facebook Features) ---
+  feed: router({
+    createPost: protectedProcedure
+      .input(z.object({ content: z.string(), mediaUrls: z.array(z.string()).optional() }))
+      .mutation(async ({ ctx, input }) => {
+        return db.createPost({ ...input, authorId: ctx.user.id });
+      }),
+    getFeed: publicProcedure
+      .input(z.object({ page: z.number().default(1) }))
+      .query(async ({ input }) => {
+        return db.getFeedPosts(20, (input.page - 1) * 20);
+      }),
+    like: protectedProcedure
+      .input(z.object({ postId: z.number() }))
+      .mutation(async ({ input }) => {
+        return db.likePost(input.postId);
+      }),
+  }),
+
+  // --- REELS & STORIES (TikTok Features) ---
+  reels: router({
+    getTrending: publicProcedure.query(async () => {
+      return db.getTrendingVideos(10);
+    }),
+    uploadReel: protectedProcedure
+      .input(z.object({ title: z.string(), hlsUrl: z.string(), thumb: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        return db.createVideo({
+          ownerId: ctx.user.id,
+          title: input.title,
+          hlsUrl: input.hlsUrl,
+          thumbnailUrl: input.thumb,
+          isReel: true
+        });
+      }),
+  }),
+
+  // --- AI HELPDESK 24/7 ---
+  helpdesk: router({
+    ask: publicProcedure
+      .input(z.object({ question: z.string() }))
+      .query(async ({ input }) => {
+        // AI Integration placeholder (using existing metadata logic)
+        return { answer: `Hello! Regarding "${input.question}", PetMatch AI recommends consulting a certified vet. For breeding, check our DNA engine.` };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

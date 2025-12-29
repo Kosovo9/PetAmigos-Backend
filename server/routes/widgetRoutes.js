@@ -1,7 +1,7 @@
 
 // server/routes/widgetRoutes.js
 import express from 'express';
-import Pet from '../models/Pet.js'; // Ensure correct path to models
+import Pet from '../models/PetProfile.js'; // Ensure correct path to models
 
 const router = express.Router();
 

@@ -33,11 +33,22 @@ const {
 
 
 
-const app = express();
+const UniversalEngine = require('./core/UniversalEngine');
+const QuantumSecurity = require('./security/QuantumSecurity');
+const SpeedOptimizer = require('./performance/SpeedOptimizer');
 
+// 🚀 INICIALIZACIÓN DE MOTORES 200X
+const universalEngine = new UniversalEngine();
+const quantumSecurity = new QuantumSecurity();
+
+console.log(`🚀 Universal Engine Active: ${JSON.stringify(universalEngine.detectPlatform())}`);
+console.log(`🔒 Quantum Security Initialized`);
+
+const app = express();
 const server = http.createServer(app);
 
-
+// ⚡ SPEED OPTIMIZER (Compression & Caching)
+SpeedOptimizer.applyMiddleware(app);
 
 // 🛡️ CAPA 1: Helmet - Headers de Seguridad HTTP
 app.use(helmetConfig);

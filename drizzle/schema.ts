@@ -7,7 +7,8 @@ import { relations } from "drizzle-orm";
  */
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+  clerkId: varchar("clerkId", { length: 255 }).unique(),
+  openId: varchar("openId", { length: 64 }).unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
   bio: text("bio"),
@@ -246,6 +247,9 @@ export const comments = mysqlTable("comments", {
   postId: int("postId").notNull(),
   authorId: int("authorId").notNull(),
   content: text("content").notNull(),
+  audioUrl: varchar("audioUrl", { length: 512 }),
+  audioDuration: int("audioDuration"),
+  sentiment: varchar("sentiment", { length: 50 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -406,3 +410,122 @@ export const creatorAnalyticsRelations = relations(creatorAnalytics, ({ one }) =
 export const notificationsRelations = relations(notifications, ({ one }) => ({
   user: one(users, { fields: [notifications.userId], references: [users.id] }),
 }));
+
+// --- DATING & MATCHING (Dating Algorithm Hub) ---
+
+export const datingProfiles = mysqlTable("datingProfiles", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  breed: varchar("breed", { length: 255 }).notNull(),
+  age: int("age").notNull(),
+  gender: varchar("gender", { length: 50 }).notNull(), // male, female, other
+  lookingFor: varchar("lookingFor", { length: 50 }).notNull(), // male, female, both
+  locationJson: json("locationJson").notNull(), // {lat, lon}
+  radius: int("radius").default(50), // km
+  bio: text("bio"),
+  pics: json("pics").notNull(), // string[]
+  isVisible: boolean("isVisible").default(true),
+});
+
+export const swipes = mysqlTable("swipes", {
+  id: int("id").autoincrement().primaryKey(),
+  fromUserId: int("fromUserId").notNull(),
+  toUserId: int("toUserId").notNull(),
+  liked: boolean("liked").notNull(), // true = like, false = nope
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export const datingMatches = mysqlTable("datingMatches", {
+  id: int("id").autoincrement().primaryKey(),
+  user1Id: int("user1Id").notNull(),
+  user2Id: int("user2Id").notNull(),
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+// --- COMMUNITIES & GROUPS ---
+
+export const communities = mysqlTable("communities", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  description: text("description"),
+  avatarUrl: varchar("avatarUrl", { length: 512 }),
+  bannerUrl: varchar("bannerUrl", { length: 512 }),
+  ownerId: int("ownerId").notNull(),
+  settings: json("settings"), // {allowPosts, allowMedia, requireApproval}
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export const communityMembers = mysqlTable("communityMembers", {
+  id: int("id").autoincrement().primaryKey(),
+  communityId: int("communityId").notNull(),
+  userId: int("userId").notNull(),
+  role: varchar("role", { length: 50 }).default("member"), // owner, admin, member
+  joinedAt: timestamp("joinedAt").defaultNow(),
+});
+
+export const communityPosts = mysqlTable("communityPosts", {
+  id: int("id").autoincrement().primaryKey(),
+  communityId: int("communityId").notNull(),
+  authorId: int("authorId").notNull(),
+  content: text("content"),
+  mediaUrls: json("mediaUrls"),
+  approved: boolean("approved").default(false),
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+
+
+// --- MODERATION SYSTEMS ---
+
+export const moderationTickets = mysqlTable("moderationTickets", {
+  id: int("id").autoincrement().primaryKey(),
+  targetId: int("targetId").notNull(), // ID of post or content
+  targetType: varchar("targetType", { length: 50 }).notNull(), // post, community_post, comment
+  reason: text("reason").notNull(),
+  status: varchar("status", { length: 50 }).default("pending"), // pending, resolved, dismissed
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+// --- UPDATED RELATIONS ---
+
+export const datingProfilesRelations = relations(datingProfiles, ({ one }) => ({
+  user: one(users, { fields: [datingProfiles.userId], references: [users.id] }),
+}));
+
+export const communitiesRelations = relations(communities, ({ one, many }) => ({
+  owner: one(users, { fields: [communities.ownerId], references: [users.id] }),
+  members: many(communityMembers),
+  posts: many(communityPosts),
+}));
+
+export const communityMembersRelations = relations(communityMembers, ({ one }) => ({
+  community: one(communities, { fields: [communityMembers.communityId], references: [communities.id] }),
+  user: one(users, { fields: [communityMembers.userId], references: [users.id] }),
+}));
+
+export const communityPostsRelations = relations(communityPosts, ({ one }) => ({
+  community: one(communities, { fields: [communityPosts.communityId], references: [communities.id] }),
+  author: one(users, { fields: [communityPosts.authorId], references: [users.id] }),
+}));
+
+export const superLikes = mysqlTable("superLikes", {
+  id: int("id").autoincrement().primaryKey(),
+  fromUserId: int("fromUserId").notNull(),
+  toUserId: int("toUserId").notNull(),
+  streak: int("streak").default(0),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type SuperLike = typeof superLikes.$inferSelect;
+export type InsertSuperLike = typeof superLikes.$inferInsert;
+
+export const vetConsultations = mysqlTable("vetConsultations", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  petId: int("petId").notNull(),
+  symptoms: text("symptoms").notNull(),
+  aiResponse: text("aiResponse"),
+  severity: varchar("severity", { length: 50 }),
+  createdAt: timestamp("createdAt").defaultNow(),
+});

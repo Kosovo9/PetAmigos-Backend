@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Menu, X, Sparkles, MessageCircle, MapPin, Heart, DollarSign, Users, LogOut, User as UserIcon, Plus } from 'lucide-react';
+import { Menu, X, Sparkles, MessageCircle, MapPin, Heart, DollarSign, Users, LogOut, User as UserIcon, Plus, Globe } from 'lucide-react';
 import { useState } from 'react';
 import { useMockAuth } from './MockAuthProvider';
 
@@ -55,6 +55,14 @@ export default function Header() {
                         <Link href="/feed" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
                             <Users className="w-4 h-4 text-blue-400" />
                             Comunidad
+                        </Link>
+                        <Link href="/dating" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
+                            <Heart className="w-4 h-4 text-rose-500" />
+                            Dating
+                        </Link>
+                        <Link href="/communities" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
+                            <Globe className="w-4 h-4 text-emerald-400" />
+                            Groups
                         </Link>
                         <Link href="/reels" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
                             <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />

@@ -13,6 +13,8 @@ import PetSocialFeed from "./pages/PetSocialFeed";
 import PetReels from "./pages/PetReels";
 import CreatorDashboard from "./pages/CreatorDashboard";
 import VideoUpload from "./pages/VideoUpload";
+import DatingPage from "./pages/DatingPage";
+import CommunitiesPage from "./pages/CommunitiesPage";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -27,6 +29,8 @@ function Router() {
       <Route path={"/reels"} component={PetReels} />
       <Route path={"/creator"} component={CreatorDashboard} />
       <Route path={"/upload-reel"} component={VideoUpload} />
+      <Route path={"/dating"} component={DatingPage} />
+      <Route path={"/communities"} component={CommunitiesPage} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

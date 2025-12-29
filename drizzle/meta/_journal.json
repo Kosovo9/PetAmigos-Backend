@@ -22,6 +22,20 @@
       "when": 1766970965461,
       "tag": "0002_chemical_thena",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1766972965143,
+      "tag": "0003_solid_gwen_stacy",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1766978127206,
+      "tag": "0004_sharp_roxanne_simpson",
+      "breakpoints": true
     }
   ]
 }

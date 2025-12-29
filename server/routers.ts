@@ -378,6 +378,62 @@ export const appRouter = router({
         return { answer: `Hello! Regarding "${input.question}", PetMatch AI recommends consulting a certified vet. For breeding, check our DNA engine.` };
       }),
   }),
+
+  // --- DATING ENGINE (Etapa 3) ---
+  dating: router({
+    getQueue: protectedProcedure.query(async ({ ctx }) => {
+      const { getQueue } = await import("./services/datingAlgorithmService");
+      return getQueue(ctx.user.id);
+    }),
+    swipe: protectedProcedure
+      .input(z.object({ toUserId: z.number(), liked: z.boolean() }))
+      .mutation(async ({ ctx, input }) => {
+        const { swipe } = await import("./services/datingAlgorithmService");
+        return swipe(ctx.user.id, input.toUserId, input.liked);
+      }),
+    superLike: protectedProcedure
+      .input(z.object({ toUserId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { useSuperLike } = await import("./services/superLikeService");
+        return useSuperLike(ctx.user.id, input.toUserId);
+      }),
+    getSuperLikeStatus: protectedProcedure.query(async ({ ctx }) => {
+      const { canSuperLike } = await import("./services/superLikeService");
+      return canSuperLike(ctx.user.id);
+    }),
+  }),
+
+  // --- COMMUNITIES & GROUPS (Etapa 3) ---
+  communities: router({
+    create: protectedProcedure
+      .input(z.object({ name: z.string().min(3), slug: z.string().min(3) }))
+      .mutation(async ({ ctx, input }) => {
+        const { createCommunity } = await import("./services/communityService");
+        return createCommunity({ ...input, ownerId: ctx.user.id });
+      }),
+    join: protectedProcedure
+      .input(z.object({ communityId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const { joinCommunity } = await import("./services/communityService");
+        return joinCommunity(input.communityId, ctx.user.id);
+      }),
+    getFeed: protectedProcedure
+      .input(z.object({ communityId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const { getCommunityFeed } = await import("./services/communityService");
+        return getCommunityFeed(input.communityId, ctx.user.id);
+      }),
+  }),
+
+  // --- VOICE & LIVE SESSIONS ---
+  voice: router({
+    getToken: protectedProcedure
+      .input(z.object({ room: z.string() }))
+      .query(async ({ ctx, input }) => {
+        const { generateVoiceToken } = await import("./services/voiceCallService");
+        return { token: generateVoiceToken(input.room, ctx.user.id.toString()) };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

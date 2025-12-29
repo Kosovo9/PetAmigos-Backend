@@ -52,10 +52,14 @@ const trpcClient = trpc.createClient({
   ],
 });
 
+import { ClerkProvider } from "./components/ClerkWrapper";
+
 createRoot(document.getElementById("root")!).render(
   <trpc.Provider client={trpcClient} queryClient={queryClient}>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <ClerkProvider>
+        <App />
+      </ClerkProvider>
     </QueryClientProvider>
   </trpc.Provider>
 );

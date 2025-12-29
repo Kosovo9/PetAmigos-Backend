@@ -35,6 +35,11 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+
+  // Clerk Webhooks
+  const clerkWebhookRoutes = (await import("../routes/clerk-webhook.routes")).default;
+  app.use("/api/webhooks/clerk", clerkWebhookRoutes);
+
   // tRPC API
   app.use(
     "/api/trpc",
@@ -43,6 +48,27 @@ async function startServer() {
       createContext,
     })
   );
+
+  // Voice Call routes (WebRTC)
+  const voiceCallRoutes = (await import("../routes/voice-call.routes")).default;
+  app.use("/api/voice-call", voiceCallRoutes);
+
+  // Moderation routes
+  // Moderation routes
+  const moderationRoutes = (await import("../routes/moderation.routes")).default;
+  app.use("/api/moderation", moderationRoutes);
+
+  // Super Like routes
+  const superLikeRoutes = (await import("../routes/super-like.routes")).default;
+  app.use("/api/super-like", superLikeRoutes);
+
+  // Vet AI routes
+  const vetAiRoutes = (await import("../routes/vet-ai.routes")).default;
+  app.use("/api/vet-ai", vetAiRoutes);
+
+  // Audio/Voice routes
+  const audioRoutes = (await import("../routes/audio.routes")).default;
+  app.use("/api/audio", audioRoutes);
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);

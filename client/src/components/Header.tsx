@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Menu, X, Sparkles, MessageCircle, MapPin, Heart, DollarSign, Users, LogOut, User as UserIcon } from 'lucide-react';
+import { Menu, X, Sparkles, MessageCircle, MapPin, Heart, DollarSign, Users, LogOut, User as UserIcon, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useMockAuth } from './MockAuthProvider';
 
@@ -59,6 +59,13 @@ export default function Header() {
                         <Link href="/reels" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
                             <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
                             Reels
+                        </Link>
+                        <Link href="/creator" className="text-white/80 hover:text-white font-medium transition-colors flex items-center gap-2">
+                            <Users className="w-4 h-4 text-emerald-400" />
+                            Creator Hub
+                        </Link>
+                        <Link href="/upload-reel" className="bg-primary text-white px-4 py-2 rounded-full font-bold hover:scale-105 transition-all text-sm flex items-center gap-2">
+                            <Plus className="w-4 h-4" /> Post Reel
                         </Link>
                     </nav>
 

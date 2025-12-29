@@ -1,0 +1,13 @@
+{
+    "welcome": "Welcome to PetMatch",
+    "currency": "{{val, currency}}",
+    "askSomething": "Ask something...",
+    "like": "Like",
+    "comment": "Comment",
+    "share": "Share",
+    "send": "Send",
+    "reels": "Pet Reels",
+    "feed": "Community Feed",
+    "creator": "Creator Hub",
+    "dna": "DNA Matching"
+}

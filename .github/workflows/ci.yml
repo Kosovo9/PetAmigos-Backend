@@ -1,0 +1,55 @@
+name: PetMatch CI/CD
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    test-and-build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "18"
+                  cache: "npm"
+                  cache-dependency-path: "./client/package-lock.json"
+
+            - name: Install Client Dependencies
+              run: cd client && npm ci
+
+            - name: Run Tests
+              run: cd client && npm test
+
+            - name: Build Frontend
+              run: cd client && npm run build
+
+            - name: Security Audit
+              run: cd client && npm audit --audit-level=high
+
+    deploy-production:
+        needs: test-and-build
+        if: github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Deploy to Netlify
+              uses: nwtgck/actions-netlify@v2.0
+              with:
+                  publish-dir: "./client/out"
+                  production-branch: main
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  deploy-message: "Deploy from GitHub Actions"
+                  enable-pull-request-comment: false
+                  enable-commit-comment: true
+                  overwrites-pull-request-comment: true
+              env:
+                  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+                  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

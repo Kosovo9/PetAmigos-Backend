@@ -1,289 +1,296 @@
-
-import { Request, Response, NextFunction } from 'express';
-import rateLimit from 'express-rate-limit';
+// Middleware de seguridad completo para Express
 import helmet from 'helmet';
-import { verify } from 'jsonwebtoken';
-import { redis } from '../redis';
-import { getDb } from '../db';
-import { users } from '../../drizzle/schema';
-import { eq } from 'drizzle-orm';
+import hpp from 'hpp';
+import { Request, Response, NextFunction } from 'express';
+import { sanitizeObject } from '../lib/validation';
 
-declare global {
-    namespace Express {
-        interface Request {
-            user?: any;
-            deviceFingerprint?: string;
-        }
-    }
-}
-
-// Rate limiting por endpoint
-export const securityMiddleware = {
-    // General API protection
-    api: rateLimit({
-        windowMs: 15 * 60 * 1000, // 15 minutos
-        max: 100, // límite de 100 requests por IP
-        standardHeaders: true,
-        legacyHeaders: false, // Updated for stricter types
-        handler: (req: Request, res: Response) => {
-            res.status(429).json({
-                error: 'Too many requests',
-                retryAfter: 15 * 60,
-                message: 'Por favor intenta más tarde',
-            });
-        },
-    }),
-
-    // Auth endpoints - más estricto
-    auth: rateLimit({
-        windowMs: 15 * 60 * 1000,
-        max: 5, // solo 5 intentos de login por IP
-        skipSuccessfulRequests: true,
-        handler: (req: Request, res: Response) => {
-            res.status(429).json({
-                error: 'Too many login attempts',
-                message: 'Tu cuenta ha sido bloqueada temporalmente',
-            });
-        },
-    }),
-
-    // Financial endpoints - ultra estricto
-    financial: rateLimit({
-        windowMs: 60 * 1000, // 1 minuto
-        max: 10, // 10 transacciones por minuto
-        handler: (req: Request, res: Response) => {
-            res.status(429).json({
-                error: 'Transaction limit exceeded',
-                message: 'Por favor espera un momento',
-            });
-        },
-    }),
-};
-
-// Helmet security headers (Updated for strict mode)
+// Headers de seguridad completos con Helmet
 export const securityHeaders = helmet({
+    // Content Security Policy estricto
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "https:"],
-            scriptSrc: ["'self'"],
-            connectSrc: ["'self'", "https://api.petmatch.fun"],
-            frameSrc: ["'none'"],
+            scriptSrc: [
+                "'self'",
+                "'unsafe-inline'", // Necesario para Next.js en dev
+                "'unsafe-eval'",   // Necesario para hot reload
+                "https://www.mercadopago.com",
+                "https://www.paypal.com",
+                "https://cdn.jsdelivr.net"
+            ],
+            styleSrc: [
+                "'self'",
+                "'unsafe-inline'",
+                "https://fonts.googleapis.com"
+            ],
+            fontSrc: [
+                "'self'",
+                "https://fonts.gstatic.com"
+            ],
+            imgSrc: [
+                "'self'",
+                "data:",
+                "https://res.cloudinary.com",
+                "https://*.huggingface.co",
+                "https://www.paypalobjects.com"
+            ],
+            connectSrc: [
+                "'self'",
+                "https://api.mercadopago.com",
+                "https://api.paypal.com",
+                "https://api-inference.huggingface.co",
+                "wss://" + (process.env.WS_DOMAIN || 'localhost:5000')
+            ],
+            frameSrc: [
+                "'self'",
+                "https://www.mercadopago.com",
+                "https://www.paypal.com"
+            ],
             objectSrc: ["'none'"],
-            upgradeInsecureRequests: [],
-        },
+            upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
+        }
     },
+
+    // HSTS con preload
     hsts: {
-        maxAge: 31536000,
+        maxAge: 31536000, // 1 año
         includeSubDomains: true,
-        preload: true,
+        preload: true
     },
-    referrerPolicy: { policy: 'same-origin' },
+
+    // Otras protecciones
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    frameguard: { action: 'deny' },
+    noSniff: true,
+    xssFilter: true,
+    hidePoweredBy: true,
+
+    // Permisos restrictivos
+    permittedCrossDomainPolicies: { permittedPolicies: 'none' },
+    dnsPrefetchControl: { allow: false },
+    ieNoOpen: true
 });
 
-// JWT validation with blacklist
-export async function validateToken(req: Request, res: Response, next: NextFunction) {
+// Prevenir HTTP Parameter Pollution
+export const preventHPP = hpp({
+    whitelist: [
+        'page',
+        'limit',
+        'sort',
+        'filter',
+        'search',
+        'pet_type',
+        'breed',
+        'age',
+        'location'
+    ]
+});
+
+// Sanitización de inputs en body y query
+export const sanitizeInputs = (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.headers.authorization?.split(' ')[1];
-        if (!token) {
-            return res.status(401).json({ error: 'No token provided' });
+        // Sanitizar query params
+        if (req.query) {
+            req.query = sanitizeObject(req.query);
         }
 
-        // Check blacklist
-        const isBlacklisted = await redis.get(`blacklist:${token}`);
-        if (isBlacklisted) {
-            return res.status(401).json({ error: 'Token revoked' });
+        // Sanitizar body
+        if (req.body) {
+            req.body = sanitizeObject(req.body);
         }
 
-        // Verify token
-        const decoded = verify(token, process.env.JWT_SECRET || 'secret') as any;
+        // Sanitizar params
+        if (req.params) {
+            req.params = sanitizeObject(req.params);
+        }
 
-        // Check if user is still active
-        const userActive = await redis.get(`user:active:${decoded.userId}`);
-        // Loose check for dev
-        // if (!userActive) {
-        //  return res.status(401).json({ error: 'User not active' });
-        // }
-
-        req.user = decoded;
         next();
     } catch (error) {
-        return res.status(401).json({ error: 'Invalid token' });
+        console.error('Error sanitizing inputs:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
-// Device fingerprinting
-export async function deviceFingerprint(req: Request, res: Response, next: NextFunction) {
-    const userAgent = req.headers['user-agent'];
-    const acceptLanguage = req.headers['accept-language'];
-    const ip = req.ip;
+// Validar tamaño de payload
+export const validatePayloadSize = (maxSize: number = 10 * 1024 * 1024) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const contentLength = parseInt(req.headers['content-length'] || '0');
 
-    // Generate device fingerprint
-    const fingerprint = Buffer.from(`${userAgent}:${acceptLanguage}:${ip}`).toString('base64');
+        if (contentLength > maxSize) {
+            return res.status(413).json({
+                error: 'Payload too large',
+                maxSize: `${maxSize / (1024 * 1024)}MB`,
+                received: `${(contentLength / (1024 * 1024)).toFixed(2)}MB`
+            });
+        }
 
-    // Check for suspicious patterns
+        next();
+    };
+};
+
+// Detección de patrones sospechosos
+export const detectSuspiciousPatterns = (req: Request, res: Response, next: NextFunction) => {
     const suspiciousPatterns = [
-        /bot/i,
-        /crawl/i,
-        /spider/i,
-        /curl/i,
-        /wget/i,
+        // SQL Injection
+        /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE)\b)/gi,
+        /(-{2}|\/\*|\*\/)/g,
+
+        // XSS
+        /(<script|<iframe|<object|<embed|on\w+\s*=)/gi,
+        /javascript:/gi,
+
+        // Path traversal
+        /(\.\.\/|\.\.\\)/g,
+
+        // Command injection
+        /(\||;|&|`|\$\(|\$\{)/g,
     ];
 
-    const isSuspicious = suspiciousPatterns.some(pattern =>
-        pattern.test(userAgent || '')
-    );
+    const checkString = (str: string): boolean => {
+        return suspiciousPatterns.some(pattern => pattern.test(str));
+    };
+
+    const checkObject = (obj: any): boolean => {
+        if (typeof obj === 'string') {
+            return checkString(obj);
+        }
+
+        if (typeof obj === 'object' && obj !== null) {
+            return Object.values(obj).some(value => checkObject(value));
+        }
+
+        return false;
+    };
+
+    // Verificar body, query y params
+    const isSuspicious =
+        checkObject(req.body) ||
+        checkObject(req.query) ||
+        checkObject(req.params);
 
     if (isSuspicious) {
-        // Log and potentially block
-        await redis.incr(`suspicious:${fingerprint}`);
-        const count = await redis.get(`suspicious:${fingerprint}`);
-
-        if (parseInt(count || '0') > 10) {
-            return res.status(403).json({ error: 'Access denied' });
-        }
-    }
-
-    req.deviceFingerprint = fingerprint;
-    next();
-}
-
-// SQL Injection prevention
-export function sqlInjectionPrevention(req: Request, res: Response, next: NextFunction) {
-    const suspiciousPatterns = [
-        /(\b(union|select|insert|update|delete|drop|create|alter|exec|script)\b|--|\/{2}|\/\*|\*\/|xp_)/i,
-        /(\b(and|or|not|like|regexp|between|in|exists)\b.*[=<>])/i,
-    ];
-
-    const checkPayload = (payload: any): boolean => {
-        if (!payload) return false;
-        const payloadStr = JSON.stringify(payload);
-        return suspiciousPatterns.some(pattern => pattern.test(payloadStr));
-    };
-
-    if (checkPayload(req.body) || checkPayload(req.query) || checkPayload(req.params)) {
-        // Log the attempt
-        console.error('SQL Injection attempt detected:', {
+        console.warn('Suspicious pattern detected:', {
             ip: req.ip,
-            userAgent: req.headers['user-agent'],
-            payload: { body: req.body, query: req.query, params: req.params },
-            timestamp: new Date().toISOString(),
+            path: req.path,
+            method: req.method,
+            body: req.body,
+            query: req.query,
+            userAgent: req.headers['user-agent']
         });
 
-        return res.status(400).json({ error: 'Invalid request' });
+        return res.status(400).json({
+            error: 'Invalid request',
+            message: 'Suspicious pattern detected in request'
+        });
     }
 
     next();
-}
+};
 
-// XSS Prevention
-export function xssPrevention(req: Request, res: Response, next: NextFunction) {
-    const sanitizeInput = (input: any): any => {
-        if (typeof input === 'string') {
-            return input
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#x27;')
-                .replace(/\//g, '&#x2F;');
-        }
+// CORS seguro con whitelist
+export const secureCORS = (req: Request, res: Response, next: NextFunction) => {
+    const allowedOrigins = [
+        process.env.FRONTEND_URL || 'http://localhost:3000',
+        'https://petmatch-global.netlify.app',
+        'https://amigospet.netlify.app'
+    ];
 
-        if (typeof input === 'object' && input !== null) {
-            const sanitized: any = {};
-            for (const key in input) {
-                sanitized[key] = sanitizeInput(input[key]);
-            }
-            return sanitized;
-        }
+    const origin = req.headers.origin;
 
-        return input;
-    };
-
-    req.body = sanitizeInput(req.body);
-    req.query = sanitizeInput(req.query);
-    req.params = sanitizeInput(req.params);
-
-    next();
-}
-
-// Advanced fraud detection
-export async function fraudDetection(req: Request, res: Response, next: NextFunction) {
-    const ip = req.ip || '127.0.0.1';
-    const userId = req.user?.userId;
-
-    // Check for rapid requests
-    const requestKey = `requests:${ip}:${req.path}`;
-    const requestCount = await redis.incr(requestKey);
-    await redis.expire(requestKey, 60); // 1 minute window
-
-    if (requestCount > 30) { // Más de 30 requests por minuto
-        await redis.setex(`blocked:${ip}`, 3600, 'rapid_requests');
-        return res.status(429).json({ error: 'Too many requests - IP blocked' });
+    if (origin && allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-CSRF-Token');
+        res.setHeader('Access-Control-Max-Age', '86400'); // 24 horas
     }
 
-    // Check for geographic anomalies
-    if (userId) {
-        const lastLocation = await redis.get(`user:location:${userId}`);
-        const currentLocation = (req.headers['cf-ipcountry'] as string) || 'unknown';
-
-        if (lastLocation && lastLocation !== currentLocation) {
-            // Possible account takeover
-            await createSecurityAlert(userId, 'location_anomaly', {
-                lastLocation,
-                currentLocation,
-                timestamp: new Date().toISOString(),
-            });
-        }
-
-        await redis.setex(`user:location:${userId}`, 86400, currentLocation);
-    }
-
-    // Check device fingerprint consistency
-    if (userId && req.deviceFingerprint) {
-        const storedFingerprint = await redis.get(`user:fingerprint:${userId}`);
-        if (storedFingerprint && storedFingerprint !== req.deviceFingerprint) {
-            await createSecurityAlert(userId, 'device_change', {
-                storedFingerprint,
-                currentFingerprint: req.deviceFingerprint,
-                timestamp: new Date().toISOString(),
-            });
-        }
+    // Handle preflight
+    if (req.method === 'OPTIONS') {
+        return res.status(204).end();
     }
 
     next();
+};
+
+// Protección CSRF simple
+export const csrfProtection = (req: Request, res: Response, next: NextFunction) => {
+    // Excluir GET, HEAD, OPTIONS
+    if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+        return next();
+    }
+
+    // Excluir webhooks (tienen su propia validación)
+    if (req.path.includes('/webhook')) {
+        return next();
+    }
+
+    const csrfToken = req.headers['x-csrf-token'] || req.body?._csrf;
+    const sessionToken = req.session?.csrfToken;
+
+    if (!sessionToken) {
+        // Generar nuevo token si no existe
+        req.session = req.session || {};
+        req.session.csrfToken = generateCSRFToken();
+        return next();
+    }
+
+    if (csrfToken !== sessionToken) {
+        console.warn('CSRF token mismatch:', {
+            ip: req.ip,
+            path: req.path,
+            method: req.method
+        });
+
+        return res.status(403).json({
+            error: 'Invalid CSRF token',
+            message: 'Request rejected for security reasons'
+        });
+    }
+
+    next();
+};
+
+// Generar token CSRF aleatorio
+function generateCSRFToken(): string {
+    return require('crypto').randomBytes(32).toString('hex');
 }
 
-// Security alert system
-async function createSecurityAlert(userId: string, type: string, details: any) {
-    const alert = {
-        userId,
-        type,
-        details,
-        timestamp: new Date().toISOString(),
-        severity: type === 'location_anomaly' ? 'high' : 'medium',
-    };
+// Headers de seguridad adicionales
+export const additionalSecurityHeaders = (req: Request, res: Response, next: NextFunction) => {
+    // Prevenir clickjacking
+    res.setHeader('X-Frame-Options', 'DENY');
 
-    // Store in Redis for immediate action
-    await redis.lpush(`security:alerts:${userId}`, JSON.stringify(alert));
-    await redis.expire(`security:alerts:${userId}`, 86400);
+    // Prevenir MIME sniffing
+    res.setHeader('X-Content-Type-Options', 'nosniff');
 
-    // Send email notification
-    await sendSecurityEmail(userId, alert);
-}
+    // XSS Protection (legacy pero útil)
+    res.setHeader('X-XSS-Protection', '1; mode=block');
 
-async function sendSecurityEmail(userId: string, alert: any) {
-    const d = await getDb();
-    if (!d) return;
-    const [user] = await d.select().from(users).where(eq(users.id, Number(userId)));
-    if (!user || !user.email) return;
+    // Referrer policy
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-    console.log(`[EMAIL MOCK] To: ${user.email}, Subject: 🛡️ Alerta de Seguridad - PetMatch, Body: Activity ${alert.type}`);
-    // Mock email implementation
-}
+    // Permissions policy
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
-// Mock send email function
-async function sendEmail(to: string, subject: string, html: string) {
-    console.log(`Sending email to ${to}: ${subject}`);
-}
+    // Cross-Origin policies
+    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader('Cross-Origin-Resource-Policy', 'same-site');
+
+    next();
+};
+
+// Exportar middleware stack completo
+export const securityMiddlewareStack = [
+    securityHeaders,
+    preventHPP,
+    secureCORS,
+    additionalSecurityHeaders,
+    validatePayloadSize(),
+    sanitizeInputs,
+    detectSuspiciousPatterns,
+    csrfProtection
+];
+
+export default securityMiddlewareStack;

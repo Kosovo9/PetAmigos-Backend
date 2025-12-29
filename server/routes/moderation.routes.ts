@@ -1,34 +1,36 @@
-import { Router } from 'express';
-import { eq } from 'drizzle-orm';
-import { moderationTickets } from '../../drizzle/schema';
-import { db } from '../db';
+
+import { Router } from "express";
+import { db } from "../db";
+import { moderationQueue } from "../../drizzle/schema";
+import { eq, desc } from "drizzle-orm";
+import { approveContent, rejectContent } from "../services/moderationService";
 
 const router = Router();
 
-// Create a moderation ticket
-router.post('/ticket', async (req, res) => {
-    const { targetId, targetType, reason } = req.body;
-    if (!targetId || !targetType || !reason) {
-        return res.status(400).json({ error: 'Missing fields' });
-    }
-    try {
-        const result = await db.insert(moderationTickets).values({ targetId, targetType, reason }).returning();
-        res.json({ ticket: result[0] });
-    } catch (err) {
-        console.error('Create ticket error', err);
-        res.status(500).json({ error: 'Failed to create ticket' });
-    }
+// Get Pending Items
+router.get('/pending', async (req, res) => {
+    // In strict system, verify moderator role here
+    const pendingItems = await db.select()
+        .from(moderationQueue)
+        .where(eq(moderationQueue.status, 'pending'))
+        .orderBy(desc(moderationQueue.createdAt));
+    res.json(pendingItems);
 });
 
-// List tickets (admin view)
-router.get('/tickets', async (req, res) => {
-    try {
-        const tickets = await db.select().from(moderationTickets).orderBy(moderationTickets.createdAt);
-        res.json({ tickets });
-    } catch (err) {
-        console.error('List tickets error', err);
-        res.status(500).json({ error: 'Failed to fetch tickets' });
-    }
+// Approve
+router.post('/:id/approve', async (req, res) => {
+    const { id } = req.params;
+    const { moderatorId } = req.body; // In Prod, get from verified user token
+    await approveContent(Number(id), moderatorId || 1); // fallback admin
+    res.json({ success: true, action: 'approved' });
+});
+
+// Reject
+router.post('/:id/reject', async (req, res) => {
+    const { id } = req.params;
+    const { moderatorId } = req.body;
+    await rejectContent(Number(id), moderatorId || 1);
+    res.json({ success: true, action: 'rejected' });
 });
 
 export default router;

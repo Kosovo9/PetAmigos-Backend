@@ -1,32 +1,47 @@
 #!/bin/bash
-# 🚀 DEPLOY SCRIPT - PETMATCH.FUN PRODUCTION
+# deploy.sh - Ejecutar en VPS Ubuntu 22.04 (Oracle Free Tier)
 
-echo "🚀 Starting PetMatch.fun Production Deployment..."
-echo ""
+echo "🚀 Iniciando despliegue de PetAmigos en VPS..."
 
-# Step 1: Build Frontend
-echo "📦 Building Frontend..."
-cd client
-npm run build
+# 1. Actualizar sistema
+sudo apt update && sudo apt upgrade -y
 
-if [ $? -eq 0 ]; then
-    echo "✅ Frontend build successful!"
-else
-    echo "❌ Frontend build failed!"
-    exit 1
+# 2. Instalar Docker
+sudo apt install -y docker.io docker-compose
+
+# 3. Instalar Caddy (si se usa fuera de Docker) o configurar Docker
+# Aquí asumimos despliegue directo simple con Docker
+
+# 4. Construir imagen
+# Nota: En prod, idealmente se usa un registry (Docker Hub/GHCR),
+# pero para free tier construcción local está bien si hay recursos.
+echo "🏗️ Construyendo imagen Docker..."
+sudo docker build -t petamigos-app .
+
+# 5. Ejecutar contenedor
+echo "🏃 Ejecutando contenedor..."
+sudo docker stop petamigos || true
+sudo docker rm petamigos || true
+sudo docker run -d \
+  --name petamigos \
+  --restart unless-stopped \
+  -p 5000:5000 \
+  --env-file .env \
+  petamigos-app
+
+# 6. Configurar Caddy (Reverse Proxy con HTTPS automático)
+echo "🔒 Configurando Caddy para HTTPS..."
+# Instalar Caddy si no existe
+if ! command -v caddy &> /dev/null; then
+    sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+    sudo apt update
+    sudo apt install caddy
 fi
 
-# Step 2: Test Backend
-echo "🧪 Testing Backend..."
-cd ../server
-npm test 2>/dev/null || echo "⚠️ No tests found, skipping..."
+# Copiar Caddyfile
+sudo cp Caddyfile /etc/caddy/Caddyfile
+sudo systemctl reload caddy
 
-echo ""
-echo "✅ All checks passed!"
-echo ""
-echo "📋 NEXT STEPS:"
-echo "1. Deploy Backend to Render: https://render.com"
-echo "2. Deploy Frontend to Vercel: Run 'vercel --prod' in client folder"
-echo "3. Configure DNS in Cloudflare"
-echo ""
-echo "🎉 Ready to launch!"
+echo "✅ Despliegue completado con éxito!"

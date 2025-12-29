@@ -1,34 +1,8 @@
-# https://www.robotstxt.org/robotstxt.html
-# PetMatch.fun - AI Pet Photo Generation Platform
-
-# Allow all major search engines
-User-agent: Googlebot
-User-agent: Bingbot
-User-agent: Slurp
-User-agent: DuckDuckBot
-User-agent: Baiduspider
-User-agent: YandexBot
-User-agent: AhrefsBot
-User-agent: SemrushBot
-Allow: /
-Crawl-delay: 1
-
-# Block admin and API routes
 User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /admin/
-Disallow: /_next/
-Disallow: /dashboard/
 
-# Block bad bots
-User-agent: MJ12bot
-User-agent: AhrefsBot
-User-agent: SemrushBot
-User-agent: DotBot
-User-agent: Screaming Frog SEO Spider
-Disallow: /
+Sitemap: https://petmatch-global.netlify.app/sitemap.xml
 
-# Sitemaps
-Sitemap: https://www.petmatch.fun/sitemap.xml
-Sitemap: https://www.petmatch.fun/sitemap-0.xml
+# Disallow rutas sensibles
+Disallow: /admin
+Disallow: /private

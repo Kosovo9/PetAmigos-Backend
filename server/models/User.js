@@ -60,6 +60,9 @@ const UserSchema = new mongoose.Schema({
     }
   },
 
+  // 🔔 NOTIFICACIONES
+  pushSubscription: { type: Object }, // Objeto de suscripción VAPID
+
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

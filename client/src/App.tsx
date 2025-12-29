@@ -15,6 +15,15 @@ import CreatorDashboard from "./pages/CreatorDashboard";
 import VideoUpload from "./pages/VideoUpload";
 import DatingPage from "./pages/DatingPage";
 import CommunitiesPage from "./pages/CommunitiesPage";
+import About from "./pages/About";
+
+import { HelmetProvider } from "react-helmet-async";
+import Faq from "./pages/Faq";
+
+import ModerationPanel from "./pages/ModerationPanel";
+import Stories from "./pages/Stories";
+import EventsMap from "./pages/EventsMap";
+import SecurityDashboard from "./pages/SecurityDashboard";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -31,6 +40,15 @@ function Router() {
       <Route path={"/upload-reel"} component={VideoUpload} />
       <Route path={"/dating"} component={DatingPage} />
       <Route path={"/communities"} component={CommunitiesPage} />
+      <Route path={"/faq"} component={Faq} />
+      <Route path={"/about"} component={About} />
+
+      {/* 🚀 NUEVAS RUTAS FINAL PUSH */}
+      <Route path="/moderation" component={ModerationPanel} />
+      <Route path="/stories" component={Stories} />
+      <Route path="/events" component={EventsMap} />
+      <Route path="/security" component={SecurityDashboard} />
+
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -50,10 +68,12 @@ function App() {
         defaultTheme="light"
       // switchable
       >
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <HelmetProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </HelmetProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

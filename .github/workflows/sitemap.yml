@@ -1,0 +1,24 @@
+name: Generate Sitemap
+
+on:
+    push:
+        branches: [main]
+
+jobs:
+    sitemap:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            # In a real scenario, you'd run a script here to generate the sitemap
+            # For now, we update the static one or trigger a rebuild
+            - name: Generate Sitemap
+              run: echo '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://petmatch-global.netlify.app/</loc></url></urlset>' > client/public/sitemap.xml
+
+            - name: Commit Sitemap
+              run: |
+                  git config --global user.name 'GitHub Action'
+                  git config --global user.email 'action@github.com'
+                  git add client/public/sitemap.xml
+                  git commit -m "Update sitemap.xml" || echo "No changes to commit"
+                  git push

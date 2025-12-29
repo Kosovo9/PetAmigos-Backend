@@ -212,6 +212,23 @@ app.use('/api/admin/generation', require('./routes/generationDashboardRoutes'));
 app.use('/api/affiliates', require('./routes/affiliateRoutes')); // 💼 Affiliate System (Platinum Suite)
 app.use('/api/lost-pets', require('./routes/lostPetsRoutes')); // 🔍 Lost Pets Radar (Global)
 
+// 🚀 NUEVOS MODULOS FINAL PUSH
+import widgetRoutes from './routes/widgetRoutes.js';
+app.use('/api/widget', widgetRoutes);
+
+import storyRoutes from './routes/storyRoutes.js';
+app.use('/api/stories', storyRoutes);
+
+import eventRoutes from './routes/eventRoutes.js';
+app.use('/api/events', eventRoutes);
+
+import pushRoutes from './routes/pushRoutes.js';
+app.use('/api/push', pushRoutes);
+
+import metricsRoutes from './routes/metricsRoutes.js';
+app.use('/api/metrics', metricsRoutes);
+
+
 
 
 const PORT = process.env.PORT || 5000;

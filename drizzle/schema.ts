@@ -17,6 +17,7 @@ export const users = mysqlTable("users", {
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   preferences: json("preferences"),
+  treats: int("treats").default(100), // Economy system: 100 free treats
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -485,6 +486,19 @@ export const moderationTickets = mysqlTable("moderationTickets", {
   reason: text("reason").notNull(),
   status: varchar("status", { length: 50 }).default("pending"), // pending, resolved, dismissed
   createdAt: timestamp("createdAt").defaultNow(),
+});
+
+export const moderationQueue = mysqlTable("moderationQueue", {
+  id: int("id").autoincrement().primaryKey(),
+  contentId: varchar("contentId", { length: 255 }), // Can be ID of post, pet, user, etc.
+  contentType: varchar("contentType", { length: 50 }).notNull(), // 'image', 'text', 'bio'
+  contentData: text("contentData"), // The actual text or URL to verify
+  reason: varchar("reason", { length: 255 }), // Why it was flagged
+  status: mysqlEnum("status", ["pending", "approved", "rejected"]).default("pending"),
+  moderatorId: int("moderatorId"), // Who reviewed it
+  confidenceScore: float("confidenceScore"), // AI score
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  resolvedAt: timestamp("resolvedAt"),
 });
 
 // --- UPDATED RELATIONS ---

@@ -1,0 +1,145 @@
+<!-- client/public/widget.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PetAmigos Widget</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #f9fafb;
+            color: #111827;
+        }
+
+        .widget {
+            max-width: 320px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+            position: relative;
+        }
+
+        .header {
+            height: 80px;
+            background: linear-gradient(to right, #8b5cf6, #ec4899);
+        }
+
+        .avatar-container {
+            margin-top: -40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid white;
+            background: #e5e7eb;
+            object-fit: cover;
+        }
+
+        .content {
+            padding: 16px;
+            text-align: center;
+        }
+
+        .name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .bio {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .footer {
+            padding: 12px;
+            background: #f3f4f6;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 6px 12px;
+            background: #8b5cf6;
+            color: white;
+            text-decoration: none;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .loading {
+            padding: 40px;
+            text-align: center;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="loading">Cargando mascota...</div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/api';
+
+        async function loadPet() {
+            const params = new URLSearchParams(window.location.search);
+            const petId = params.get('petId');
+
+            if (!petId) {
+                document.getElementById('app').innerHTML = '<div class="loading">ID de mascota no especificado</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/widget/pet/${petId}`);
+                if (!response.ok) throw new Error('Mascota no encontrada');
+
+                const pet = await response.json();
+
+                document.getElementById('app').innerHTML = `
+                    <div class="widget">
+                        <div class="header"></div>
+                        <div class="avatar-container">
+                            <img src="${pet.image || 'https://via.placeholder.com/150?text=Pet'}" alt="${pet.name}" class="avatar" />
+                        </div>
+                        <div class="content">
+                            <h2 class="name">${pet.name}</h2>
+                            <p class="bio">${pet.bio || '¡Hola! Soy un PetAmigo.'}</p>
+                            <a href="${window.location.origin}/pet/${pet._id}" target="_blank" class="btn">Ver Perfil Completo</a>
+                        </div>
+                        <div class="footer">
+                            Powered by <strong style="color: #8b5cf6;">PetAmigos</strong>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                document.getElementById('app').innerHTML = `<div class="loading">Error: ${err.message}</div>`;
+            }
+        }
+
+        loadPet();
+    </script>
+</body>
+
+</html>

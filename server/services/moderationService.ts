@@ -1,42 +1,42 @@
-import { db, getDb } from '../db';
-import { communityPosts, moderationTickets } from '../../drizzle/schema';
-import { eq } from 'drizzle-orm';
 
-// Mocking OpenAI for now. In production, use openai.moderations.create
-export async function moderateText(text: string): Promise<'safe' | 'warn' | 'block'> {
-    const flags = ['hate', 'violence', 'abuse'];
-    const lowerText = text.toLowerCase();
+import { db } from "../db";
+import { moderationQueue } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
 
-    if (flags.some(flag => lowerText.includes(flag))) {
-        return 'block';
+interface FlagContentParams {
+    contentId: string;
+    contentType: 'image' | 'text' | 'bio' | 'post';
+    contentData: string; // Text or URL
+    reason: string;
+    confidenceScore?: number;
+}
+
+export const addToModerationQueue = async (params: FlagContentParams) => {
+    try {
+        await db.insert(moderationQueue).values({
+            contentId: params.contentId,
+            contentType: params.contentType,
+            contentData: params.contentData,
+            reason: params.reason,
+            confidenceScore: params.confidenceScore || 0,
+            status: 'pending'
+        });
+        console.log(`[Moderation] Added item to queue: ${params.contentType} (${params.reason})`);
+        return true;
+    } catch (error) {
+        console.error("Failed to add to moderation queue:", error);
+        return false;
     }
+};
 
-    return 'safe';
-}
+export const approveContent = async (queueId: number, moderatorId: number) => {
+    await db.update(moderationQueue)
+        .set({ status: 'approved', moderatorId, resolvedAt: new Date() })
+        .where(eq(moderationQueue.id, queueId));
+};
 
-export async function moderatePost(postId: number, content: string) {
-    const d = await getDb();
-    if (!d) return;
-
-    const decision = await moderateText(content);
-
-    if (decision === 'block') {
-        await d.update(communityPosts)
-            .set({ approved: false })
-            .where(eq(communityPosts.id, postId));
-
-        await escalateToHuman(postId, 'community_post', 'Flagged by AI Moderation: Potential violation detected.');
-    }
-}
-
-export async function escalateToHuman(targetId: number, targetType: string, reason: string) {
-    const d = await getDb();
-    if (!d) return;
-
-    await d.insert(moderationTickets).values({
-        targetId,
-        targetType,
-        reason,
-        status: 'pending'
-    });
-}
+export const rejectContent = async (queueId: number, moderatorId: number) => {
+    await db.update(moderationQueue)
+        .set({ status: 'rejected', moderatorId, resolvedAt: new Date() })
+        .where(eq(moderationQueue.id, queueId));
+};

@@ -3,11 +3,11 @@ const Transaction = require('../models/Transaction');
 const User = require('../models/User');
 
 // ============================================
-// PAYMENT CONTROLLER - CASH HARVEST 10X
-// Pasarela Global: Stripe, Mercado Pago, Lemon Squeezy, PayPal
+// PAYMENT CONTROLLER - OPEN SOURCE 10X
+// 💳 Mercado Pago (LATAM) + PayPal (Global)
+// 🚫 NO STRIPE - 100% Open Source Stack
 // ============================================
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const axios = require('axios');
 
 /**
@@ -35,14 +35,11 @@ exports.processLifetimeMembership = async (req, res) => {
                 paymentResult = await processMercadoPago(amount, currency, paymentMethod);
                 break;
             case 'GLOBAL':
-                paymentResult = await processLemonSqueezy(amount, currency, paymentMethod);
-                break;
             case 'EU':
-                paymentResult = await processPayPal(amount, currency, paymentMethod);
-                break;
             case 'US':
             default:
-                paymentResult = await processStripe(amount, currency, paymentMethod);
+                // Todo fuera de LATAM usa PayPal
+                paymentResult = await processPayPal(amount, currency, paymentMethod);
                 break;
         }
 
@@ -92,72 +89,29 @@ exports.processLifetimeMembership = async (req, res) => {
  * Detectar región del usuario
  */
 function detectRegion(currency, req) {
-    // Por currency
-    if (['ARS', 'BRL', 'MXN', 'CLP', 'COP'].includes(currency)) {
+    // LATAM currencies → Mercado Pago
+    if (['ARS', 'BRL', 'MXN', 'CLP', 'COP', 'PEN', 'UYU'].includes(currency)) {
         return 'LATAM';
     }
 
-    if (['EUR', 'GBP'].includes(currency)) {
-        return 'EU'; // Prefer PayPal for Europe
-    }
-
-    // Por IP (si está disponible)
+    // LATAM countries by IP → Mercado Pago
     const country = req.headers['cf-ipcountry'] || req.headers['x-country-code'];
-    if (['AR', 'BR', 'MX', 'CL', 'CO'].includes(country)) {
+    if (['AR', 'BR', 'MX', 'CL', 'CO', 'PE', 'UY'].includes(country)) {
         return 'LATAM';
     }
 
-    // Por defecto: Global (Lemon Squeezy) o US (Stripe)
-    if (currency === 'USD' && !country) {
-        return 'US';
-    }
-
+    // Todo lo demás → PayPal (USD, EUR, GBP, etc.)
     return 'GLOBAL';
 }
 
-/**
- * Procesar pago con Stripe (US/Global)
- */
-async function processStripe(amount, currency, paymentMethod) {
-    try {
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            line_items: [{
-                price_data: {
-                    currency: currency.toLowerCase(),
-                    product_data: {
-                        name: "PetAmigos World - Lifetime Membership",
-                        description: "Pasaporte de Longevidad - Acceso de por vida"
-                    },
-                    unit_amount: Math.round(amount * 100)
-                },
-                quantity: 1
-            }],
-            mode: 'payment',
-            success_url: `${process.env.CLIENT_URL}/success`,
-            cancel_url: `${process.env.CLIENT_URL}/cancel`
-        });
-
-        return {
-            success: true,
-            transactionId: session.id,
-            paymentUrl: session.url,
-            processor: 'STRIPE'
-        };
-    } catch (error) {
-        return {
-            success: false,
-            error: error.message
-        };
-    }
-}
+// Stripe function removed - using only Mercado Pago and PayPal
 
 /**
  * Procesar pago con Mercado Pago (LATAM)
  */
 async function processMercadoPago(amount, currency, paymentMethod) {
     try {
-        const accessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+        const accessToken = process.env.MP_ACCESS_TOKEN;
 
         const response = await axios.post('https://api.mercadopago.com/checkout/preferences', {
             items: [{
@@ -199,11 +153,16 @@ async function processMercadoPago(amount, currency, paymentMethod) {
 async function processPayPal(amount, currency, paymentMethod) {
     try {
         const clientId = process.env.PAYPAL_CLIENT_ID;
-        const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+        const clientSecret = process.env.PAYPAL_SECRET;
         const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
+        // Use production or sandbox based on NODE_ENV
+        const paypalURL = process.env.NODE_ENV === 'production'
+            ? 'https://api-m.paypal.com'
+            : 'https://api-m.sandbox.paypal.com';
+
         // 1. Get Access Token
-        const tokenResponse = await axios.post('https://api-m.sandbox.paypal.com/v1/oauth2/token', 'grant_type=client_credentials', {
+        const tokenResponse = await axios.post(`${paypalURL}/v1/oauth2/token`, 'grant_type=client_credentials', {
             headers: {
                 'Authorization': `Basic ${auth}`,
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -212,7 +171,7 @@ async function processPayPal(amount, currency, paymentMethod) {
         const accessToken = tokenResponse.data.access_token;
 
         // 2. Create Order
-        const orderResponse = await axios.post('https://api-m.sandbox.paypal.com/v2/checkout/orders', {
+        const orderResponse = await axios.post(`${paypalURL}/v2/checkout/orders`, {
             intent: 'CAPTURE',
             purchase_units: [{
                 amount: {
@@ -248,149 +207,61 @@ async function processPayPal(amount, currency, paymentMethod) {
     }
 }
 
-/**
- * Procesar pago con Lemon Squeezy (Global Compliance)
- */
-async function processLemonSqueezy(amount, currency, paymentMethod) {
-    try {
-        const apiKey = process.env.LEMON_SQUEEZY_API_KEY;
-        const storeId = process.env.LEMON_SQUEEZY_STORE_ID;
-
-        const response = await axios.post(`https://api.lemonsqueezy.com/v1/checkouts`, {
-            data: {
-                type: 'checkouts',
-                attributes: {
-                    custom_price: amount,
-                    product_options: {
-                        name: "PetAmigos World - Lifetime Membership",
-                        description: "Pasaporte de Longevidad - Acceso de por vida"
-                    },
-                    checkout_options: {
-                        embed: false,
-                        media: false,
-                        logo: true
-                    },
-                    checkout_data: {
-                        custom: {
-                            petId: paymentMethod.petId || null
-                        }
-                    },
-                    preview: false,
-                    test_mode: process.env.NODE_ENV !== 'production'
-                },
-                relationships: {
-                    store: {
-                        data: {
-                            type: 'stores',
-                            id: storeId
-                        }
-                    },
-                    variant: {
-                        data: {
-                            type: 'variants',
-                            id: paymentMethod.variantId || 'default'
-                        }
-                    }
-                }
-            }
-        }, {
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Accept': 'application/vnd.api+json',
-                'Content-Type': 'application/vnd.api+json'
-            }
-        });
-
-        return {
-            success: true,
-            transactionId: response.data.data.id,
-            paymentUrl: response.data.data.attributes.url,
-            processor: 'LEMON_SQUEEZY'
-        };
-    } catch (error) {
-        return {
-            success: false,
-            error: error.response?.data?.errors?.[0]?.detail || error.message
-        };
-    }
-}
+// Lemon Squeezy removed - using only Mercado Pago and PayPal
 
 /**
- * Crear Checkout Session (Dinámico: $1 Test o Producción)
+ * Crear Checkout Session - Mercado Pago o PayPal según región
  */
 exports.createCheckoutSession = async (req, res) => {
     try {
-        const { action, priceId, type } = req.body; // type: 'credit', 'lifetime', 'pack'
+        const { action, type, currency = 'USD', region } = req.body;
         const userId = req.userId;
 
-        // 🎛️ CONFIGURACIÓN DE LANZAMIENTO
-        // Si LAUNCH_MODE es 'TEST_DOLLAR', forzamos todo a $1 USD
-        const isTestMode = process.env.LAUNCH_MODE === 'TEST_DOLLAR';
+        // Determinar monto según tipo
+        let amount = 2.99; // Default: Single Credit
+        let description = '1 Credit for PetMatch';
 
-        let finalPriceData = {};
-        let metadata = {
-            userId: userId,
-            action: action || 'generation',
-            type: type || 'ONE_DOLLAR_CREDIT'
-        };
-
-        if (isTestMode) {
-            // 🧪 MODO PRUEBA: Todo cuesta $1
-            finalPriceData = {
-                currency: 'usd',
-                product_data: {
-                    name: `TEST MODE: ${type || 'Credit'}`,
-                    description: 'Test Transaction ($1.00)'
-                },
-                unit_amount: 100 // $1.00 USD
-            };
-        } else {
-            // 🚀 MODO PRODUCCIÓN (Precios Reales)
-            if (type === 'lifetime') {
-                finalPriceData = {
-                    currency: 'usd',
-                    product_data: { name: "PetMatch Founder Lifetime", description: "Acceso de por vida + Beneficios VIP" },
-                    unit_amount: 9700 // $97.00 USD
-                };
-            } else if (type === 'pack_starter') {
-                finalPriceData = {
-                    currency: 'usd',
-                    product_data: { name: "Starter Pack (50 Credits)", description: "Paquete de inicio" },
-                    unit_amount: 1900 // $19.00 USD
-                };
-            } else {
-                // Default Single Credit
-                finalPriceData = {
-                    currency: 'usd',
-                    product_data: { name: "Single Credit", description: "1 Credit for Image Generation" },
-                    unit_amount: 299 // $2.99 USD (Precio normal unitario)
-                };
-            }
+        if (type === 'lifetime') {
+            amount = 97.00;
+            description = 'PetMatch Founder Lifetime - Acceso de por vida';
+        } else if (type === 'pack_starter') {
+            amount = 19.00;
+            description = 'Starter Pack (50 Credits)';
         }
 
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            line_items: [{
-                price_data: finalPriceData,
-                quantity: 1
-            }],
-            mode: 'payment',
-            metadata: metadata,
-            success_url: `${process.env.CLIENT_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.CLIENT_URL}/payment/cancel`
-        });
+        // Detectar región
+        const detectedRegion = region || detectRegion(currency, req);
+
+        let paymentResult;
+
+        if (detectedRegion === 'LATAM') {
+            // Usar Mercado Pago
+            paymentResult = await processMercadoPago(amount, currency, { description });
+        } else {
+            // Usar PayPal
+            paymentResult = await processPayPal(amount, currency, { description });
+        }
+
+        if (!paymentResult.success) {
+            return res.status(400).json({ error: paymentResult.error });
+        }
 
         // Registrar transacción pendiente
         await Transaction.create({
             user: userId,
-            stripeSessionId: session.id,
-            amount: finalPriceData.unit_amount / 100,
+            paymentId: paymentResult.transactionId,
+            processor: paymentResult.processor,
+            amount,
+            currency,
             status: 'pending',
             action: action || type || 'generation',
-            isTestMode: isTestMode
+            metadata: { type, description }
         });
 
-        res.json({ url: session.url });
+        res.json({
+            url: paymentResult.paymentUrl,
+            processor: paymentResult.processor
+        });
     } catch (error) {
         console.error('Error creating checkout:', error);
         res.status(500).json({ error: 'Error initiating payment' });
@@ -398,49 +269,9 @@ exports.createCheckoutSession = async (req, res) => {
 };
 
 /**
- * Webhook para procesar confirmaciones de pago
+ * Webhook handler removed - using dedicated routes in /routes/payments/
+ * See: server/routes/payments/mercadopago.js and server/routes/payments/paypal.js
  */
-exports.handlePaymentWebhook = async (req, res) => {
-    try {
-        const sig = req.headers['stripe-signature'];
-        let event;
-
-        try {
-            event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-        } catch (err) {
-            console.warn(`⚠️ Webhook signature verification failed.`, err.message);
-            return res.status(400).send(`Webhook Error: ${err.message}`);
-        }
-
-        if (event.type === 'checkout.session.completed') {
-            const session = event.data.object;
-
-            // Manejar pago de $1
-            if (session.metadata.type === 'ONE_DOLLAR_CREDIT') {
-                const txn = await Transaction.findOne({ stripeSessionId: session.id });
-                if (txn) {
-                    txn.status = 'paid';
-                    await txn.save();
-
-                    const user = await User.findById(txn.user);
-                    if (user) {
-                        await user.addCredits(1, `Payment $1 for ${txn.action}`);
-                        console.log(`✅ Added 1 credit to user ${user.email}`);
-                    }
-                }
-            }
-            // Manejar Lifetime Membership (Legacy/Existing)
-            else if (session.metadata.petId) {
-                await activateLifetimeMembership(session.metadata.petId);
-            }
-        }
-
-        res.status(200).json({ received: true });
-    } catch (error) {
-        console.error("Error en webhook:", error);
-        res.status(400).json({ error: "Webhook processing failed" });
-    }
-};
 
 /**
  * Activar membresía Lifetime después de pago confirmado

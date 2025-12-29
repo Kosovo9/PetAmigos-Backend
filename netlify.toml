@@ -1,13 +1,58 @@
+# Netlify Configuration - Optimized 10x
+# PetMatch - Zero Stripe, Full Open Source Stack
+
 [build]
   base = "client"
   publish = ".next"
-  command = "pnpm run build"
+  command = "pnpm install --no-frozen-lockfile && pnpm run build"
 
-[dev]
-  command = "pnpm run dev"
-  port = 5173
+[build.environment]
+  NODE_VERSION = "20.10.0"
+  PNPM_VERSION = "10.4.1"
+  NEXT_TELEMETRY_DISABLED = "1"
+  
+  # Build optimizations
+  NEXT_PRIVATE_STANDALONE = "true"
+  NEXTJS_SKIP_LINT = "true"
 
+# Netlify Next.js plugin for optimal deployment
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+# Cache optimization for static assets
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/_next/image/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# API redirects to backend
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/api/*"
+  to = "https://petamigos-backend.onrender.com/api/:splat"
   status = 200
+  force = true
+  
+[functions]
+  # Optimize serverless functions
+  node_bundler = "esbuild"

@@ -1,24 +1,88 @@
+# Render Configuration - Backend Service
+# PetMatch - Open Source Stack
+
 services:
+  # Main API Server
   - type: web
-    name: petmatch-backend
+    name: petamigos-backend
     env: node
-    plan: starter
-    buildCommand: pnpm install && pnpm build
-    startCommand: pnpm start
+    region: oregon
+    plan: free
+    
+    # Build configuration
+    buildCommand: |
+      cd server
+      npm cache clean --force
+      pnpm install --frozen-lockfile
+      echo "Build completed successfully"
+    
+    # Start command
+    startCommand: |
+      cd server
+      node server.js
+    
+    # Health check
+    healthCheckPath: /api/health
+    
+    # Auto deploy from main branch
+    autoDeploy: true
+    
+    # Environment variables
     envVars:
       - key: NODE_ENV
         value: production
+      
       - key: PORT
-        value: 5000
-      - key: DATABASE_URL
+        value: 10000
+      
+      # Database
+      - key: MONGODB_URI
         sync: false
+      
+      # JWT
       - key: JWT_SECRET
+        generateValue: true
+      
+      # Payment providers - Mercado Pago
+      - key: MP_ACCESS_TOKEN
         sync: false
-      - key: CLIENT_URL
-        value: https://petmatch-global.netlify.app
-      - key: LAUNCH_MODE
-        value: PRODUCTION
-      - key: STRIPE_SECRET_KEY
+      
+      # Payment providers - PayPal
+      - key: PAYPAL_CLIENT_ID
         sync: false
-      - key: GOOGLE_AI_KEY
+      - key: PAYPAL_SECRET
+        sync: false
+      
+      # AI - Hugging Face (Free)
+      - key: HUGGINGFACE_API_KEY
+        sync: false
+      
+      # Email
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      
+      # Cloudinary
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      
+      # Frontend URL
+      - key: FRONTEND_URL
+        value: https://petplaydate.netlify.app
+      
+      # Backend URL (for webhooks)
+      - key: BACKEND_URL
+        value: https://petamigos-backend.onrender.com
+      
+      # Google AI
+      - key: GEMINI_API_KEY
         sync: false

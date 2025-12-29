@@ -154,7 +154,15 @@ app.use('/api/auth', require('./routes/authRoutes'));
 
 app.use('/api/pay', require('./routes/paymentRoutes'));
 
-app.use('/api/ai', require('./routes/aiRoutes'));
+// 💳 NEW PAYMENT GATEWAYS (Mercado Pago + PayPal)
+import mercadoPagoRoutes from './routes/payments/mercadopago.js';
+import payPalRoutes from './routes/payments/paypal.js';
+app.use('/api/payments/mercadopago', mercadoPagoRoutes);
+app.use('/api/payments/paypal', payPalRoutes);
+
+// 🤖 AI ROUTES (Hugging Face - Open Source)
+import aiServiceRoutes from './routes/ai.js';
+app.use('/api/ai', aiServiceRoutes);
 
 app.use('/api/ai-creative', require('./routes/aiCreativeRoutes'));
 

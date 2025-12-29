@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.35.6",
+    "@mercadopago/sdk-react": "^1.0.7",
+    "@paypal/react-paypal-js": "^8.9.2",
     "@react-spring/web": "^10.0.3",
     "@supabase/auth-helpers-nextjs": "^0.15.0",
     "@supabase/ssr": "^0.7.0",

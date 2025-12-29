@@ -51,9 +51,50 @@ app.use(antiScrapingMiddleware);
 // 🛡️ CAPA 4: Rate Limiting General
 app.use(generalLimiter);
 
-app.use(cors());
+// 🌐 CORS Configuration Mejorado
+const corsOptions = {
+  origin: process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : [
+      'https://petmatch-global.netlify.app',
+      'https://amigospet.netlify.app',
+      'http://localhost:3000',
+      'http://localhost:5173'
+    ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token'],
+  credentials: true,
+  maxAge: 86400, // 24 horas
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Preflight para todas las rutas
+
+// 📦 Compression y Timeout
+const compression = require('compression');
+const timeout = require('connect-timeout');
+
+app.use(timeout('30s')); // Timeout global 30 segundos
+app.use((req, res, next) => {
+  if (!req.timedout) next();
+});
+
+app.use(compression({
+  level: 6,
+  threshold: 10 * 1024, // Comprimir >10KB
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  }
+}));
 
 app.use(express.json({ limit: '50mb' }));
+
+// 🏥 Health Check Automático (Evitar sleep Render)
+if (process.env.NODE_ENV === 'production') {
+  require('./scripts/healthCheck');
+}
 
 
 
@@ -238,6 +279,15 @@ app.use('/api/metrics', metricsRoutes);
 
 
 
+
+// ❌ Error Handler Centralizado (debe ir al final de todas las rutas)
+const { errorHandler, notFound } = require('./middleware/errorHandler');
+
+// 404 para rutas no encontradas
+app.use(notFound);
+
+// Error handler global
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 

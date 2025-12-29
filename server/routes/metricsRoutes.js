@@ -2,7 +2,7 @@
 // server/routes/metricsRoutes.js
 import express from 'express';
 import SecurityLog from '../models/SecurityLog.js';
-import Pet from '../models/Pet.js';
+import PetProfile from '../models/PetProfile.js';
 import auth from '../middleware/auth.js';
 
 const router = express.Router();
@@ -15,7 +15,7 @@ router.get('/dashboard', async (req, res) => {
         // Example metrics
         const blockedContent = await SecurityLog.countDocuments({ action: 'blocked_content' });
         const alerts = await SecurityLog.countDocuments({ action: 'amber_alert' });
-        const activeLostPets = await Pet.countDocuments({ status: 'lost' });
+        const activeLostPets = await PetProfile.countDocuments({ status: 'lost' });
 
         // Last 7 days logs
         const recentLogs = await SecurityLog.find().sort({ createdAt: -1 }).limit(10);

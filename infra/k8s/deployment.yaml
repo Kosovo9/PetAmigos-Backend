@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petmatch-backend
+  labels:
+    app: petmatch-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: petmatch-backend
+  template:
+    metadata:
+      labels:
+        app: petmatch-backend
+    spec:
+      containers:
+      - name: petmatch-backend
+        image: petmatch-backend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: petmatch-secrets
+              key: database-url
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: petmatch-secrets
+              key: jwt-secret
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: petmatch-backend-service
+spec:
+  selector:
+    app: petmatch-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer

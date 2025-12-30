@@ -44,8 +44,25 @@ const quantumSecurity = new QuantumSecurity();
 console.log(`🚀 Universal Engine Active: ${JSON.stringify(universalEngine.detectPlatform())}`);
 console.log(`🔒 Quantum Security Initialized`);
 
+const UniversalTabletAdapter = require('./ui/UniversalTabletAdapter');
+const UniversalAuth = require('./auth/UniversalAuth');
+
 const app = express();
 const server = http.createServer(app);
+
+// 📱 UNIVERSAL TABLET & AUTH MIDDLEWARE (200X)
+app.use((req, res, next) => {
+  // Tablet Optimization
+  const tabletAdapter = new UniversalTabletAdapter(req);
+  const optimHeaders = tabletAdapter.getOptimizationHeaders();
+  for (const [key, value] of Object.entries(optimHeaders)) {
+    res.setHeader(key, value);
+  }
+
+  // Attach Universal Auth helper to req
+  req.universalAuth = new UniversalAuth();
+  next();
+});
 
 // ⚡ SPEED OPTIMIZER (Compression & Caching)
 SpeedOptimizer.applyMiddleware(app);

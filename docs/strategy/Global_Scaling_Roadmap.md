@@ -6,14 +6,14 @@ Este documento detalla el plan de ejecución para llevar PetMatch a 10M de usuar
 **Objetivo:** Que el sistema funcione solo, cobre solo y se defienda solo.
 
 ### Lunes-Martes: Infraesructura & DevOps "Zero-Human"
-- [ ] Completar `infra/terraform/main.tf` para desplegar AWS/GCP con 1 comando.
-- [ ] Configurar CI/CD Pipeline en GitHub Actions (Build -> Test -> Deploy).
-- [ ] Implementar `Monitoring` (Prometheus/Grafana) para ver KPIs en tiempo real.
+- [ ] Completar `infra/terraform/main.tf` para AWS/GCP (Backend Core).
+- [ ] Configurar CI/CD Pipeline en Netlify (Frontend) y Railway (Backend).
+- [ ] Implementar Cloudflare Workers con Wrangler para lógica en el borde (Edge).
 
 ### Miércoles-Jueves: Motor de Ingresos (Revenue Engine)
-- [ ] Implementar `server/services/revenue/PaymentGateway.ts` (Stripe + PayPal).
-- [ ] Activar `SubscriptionManager.ts` para planes Free, Pro y Enterprise.
-- [ ] Configurar webhooks para facturación automática.
+- [ ] Implementar `server/services/revenue/PaymentGateway.ts` (PayPal + Crypto + MercadoPago).
+- [ ] Activar `SubscriptionManager.ts` con manejo directo de planes.
+- [ ] Configurar webhooks transaccionales seguros.
 
 ### Viernes-Sábado: Seguridad & Compliance
 - [ ] Implementar `server/services/compliance/GDPRManager.ts` (Auto-delete data).

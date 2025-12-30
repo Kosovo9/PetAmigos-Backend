@@ -99,6 +99,19 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // Preflight para todas las rutas
 
+app.use(express.json({ limit: '50mb' })); // Aumentar limite para uploads
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// 🚀 RUTAS MÓDULOS 1000X
+try {
+  app.use('/api', require('./services/petads/engine'));
+  app.use('/api', require('./services/marketplace/viral'));
+  app.use('/api', require('./services/messenger/server'));
+  console.log('✅ Modules: PetAds, Marketplace, Messenger -> LOADED');
+} catch (err) {
+  console.error('⚠️ Error loading 1000X modules:', err.message);
+}
+
 // 📦 Compression y Timeout
 const compression = require('compression');
 const timeout = require('connect-timeout');

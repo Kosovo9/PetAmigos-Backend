@@ -71,7 +71,7 @@ services:
       
       # Frontend URL
       - key: FRONTEND_URL
-        value: https://petplaydate.netlify.app
+        value: https://petmatch-frontend.pages.dev
       
       # Backend URL (for webhooks)
       - key: BACKEND_URL

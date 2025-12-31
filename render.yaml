@@ -10,16 +10,10 @@ services:
     plan: free
     
     # Build configuration
-    buildCommand: |
-      cd server
-      npm cache clean --force
-      pnpm install --frozen-lockfile
-      echo "Build completed successfully"
+    buildCommand: npm install && npm run build:server
     
     # Start command
-    startCommand: |
-      cd server
-      node server.js
+    startCommand: npm start
     
     # Health check
     healthCheckPath: /api/health

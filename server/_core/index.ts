@@ -47,6 +47,11 @@ async function startServer() {
   const clerkWebhookRoutes = (await import("../routes/clerk-webhook.routes")).default;
   app.use("/api/webhooks/clerk", clerkWebhookRoutes);
 
+  // Health check
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

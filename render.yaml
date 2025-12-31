@@ -12,8 +12,8 @@ services:
     # Build configuration
     buildCommand: npm install && npm run build:server
     
-    # Start command
-    startCommand: npm start
+    # Start command - Force Modern 100x Engine
+    startCommand: node dist/index.js
     
     # Health check
     healthCheckPath: /api/health
@@ -29,9 +29,9 @@ services:
       - key: PORT
         value: 10000
       
-      # Database
-      - key: MONGODB_URI
-        sync: false
+      # Database - TiDB (MySQL) - 100x Engine
+      - key: DATABASE_URL
+        value: mysql://3AJHzThXZKzgdMp.root:KG2aNxFe6ArDGJpN@gateway01.us-west-2.prod.aws.tidbcloud.com:4000/test?ssl=%7B%22rejectUnauthorized%22%3Afalse%7D
       
       # JWT
       - key: JWT_SECRET
@@ -80,3 +80,4 @@ services:
       # Google AI
       - key: GEMINI_API_KEY
         sync: false
+

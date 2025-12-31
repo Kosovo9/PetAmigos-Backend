@@ -19,7 +19,16 @@ echo "⚡ Desplegando Intelligence Edge..."
 # wrangler deploy workers/rtb-engine.js
 # wrangler deploy workers/security-headers.js
 
-# 3. Backend Verification
+
+# 3. AI Microservices (Railway/Docker)
+echo "🧠 Desplegando Servicios de IA (Python)..."
+# Se recomienda desplegar cada servicio como un Docker container separado en Railway
+# cd server/ai_core
+# docker build -t sentiment-analysis -f Dockerfile.sentiment .
+# railway up --service sentiment-analysis
+# ... repetir para image-moderation y churn-prediction
+
+# 4. Backend Verification
 echo "🔙 Verificando Backend en Railway..."
 # Health check simple
 curl -sSf https://petmatch-backend.up.railway.app/health || echo "⚠️ Backend check failed (normal if first deploy)"

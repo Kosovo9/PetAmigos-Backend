@@ -9,7 +9,7 @@ import PetDiscovery from "./pages/PetDiscovery";
 import Marketplace from "./pages/Marketplace";
 import ChatPage from "./pages/ChatPage";
 import DNAMatching from "./pages/DNAMatching";
-import PetSocialFeed from "./pages/PetSocialFeed";
+import PetSocialFeed from "./pages/PetFeed";
 import PetReels from "./pages/PetReels";
 import CreatorDashboard from "./pages/CreatorDashboard";
 import VideoUpload from "./pages/VideoUpload";
@@ -66,7 +66,7 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider
         defaultTheme="light"
-      // switchable
+        // switchable
       >
         <HelmetProvider>
           <TooltipProvider>

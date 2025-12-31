@@ -369,13 +369,68 @@ export const appRouter = router({
       }),
   }),
 
-  // --- AI HELPDESK 24/7 ---
+  // --- AI HELPDESK 300X (Fase 6) ---
   helpdesk: router({
-    ask: publicProcedure
+    ask: protectedProcedure
       .input(z.object({ question: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const { helpDeskBot } = await import("./services/support/HelpDeskBot");
+        return helpDeskBot.handleUserQuery(ctx.user.id.toString(), input.question);
+      }),
+  }),
+
+  // --- DATA & ANALYTICS 30X (Fase 4) ---
+  analytics: router({
+    getRealTimeStats: protectedProcedure.query(async () => {
+      // Note: RealTimeAnalytics is a separate service usually connected via WS
+      // but we expose metrics for the dashboard here
+      const { redis } = await import("./redis");
+      const activeUsers = await redis.get("stats:active_users") || "0";
+      const conversionRate = await redis.get("stats:conversion_rate") || "0.0";
+      return { activeUsers: parseInt(activeUsers), conversionRate: parseFloat(conversionRate) };
+    }),
+    getUserJourney: protectedProcedure
+      .input(z.object({ userId: z.string().optional() }))
+      .query(async ({ ctx, input }) => {
+        const targetId = input.userId || ctx.user.id.toString();
+        const { redis } = await import("./redis");
+        const journey = await redis.lrange(`user:journey:${targetId}`, 0, -1);
+        return journey.map(j => JSON.parse(j));
+      }),
+  }),
+
+  // --- MARKETING & AUTOMATION 100X (Fase 6) ---
+  marketing: router({
+    scheduleCampaign: protectedProcedure
+      .input(z.object({ name: z.string(), segment: z.any() }))
+      .mutation(async ({ input }) => {
+        const { emailAutomator } = await import("./services/marketing/EmailAutomator");
+        return emailAutomator.scheduleCampaign(input.name, input.segment);
+      }),
+    getCampaignMetrics: protectedProcedure
+      .input(z.object({ campaignId: z.string() }))
       .query(async ({ input }) => {
-        // AI Integration placeholder (using existing metadata logic)
-        return { answer: `Hello! Regarding "${input.question}", PetMatch AI recommends consulting a certified vet. For breeding, check our DNA engine.` };
+        const { redis } = await import("./redis");
+        const sent = await redis.get(`metrics:campaign:${input.campaignId}:sent`) || "0";
+        const opened = await redis.get(`metrics:campaign:${input.campaignId}:opened`) || "0";
+        return { sent: parseInt(sent), opened: parseInt(opened) };
+      }),
+  }),
+
+  // --- BLOCKCHAIN TRANSPARENCY (Fase 6) ---
+  blockchain: router({
+    verifyAdEvent: protectedProcedure
+      .input(z.object({ eventId: z.string(), expectedHash: z.string() }))
+      .query(async ({ input }) => {
+        const { blockchainLogger } = await import("./services/blockchain/BlockchainLogger");
+        // Verification logic (simplified)
+        return { verified: true, proof: "0x..." }; // Mock for now until contracts are live
+      }),
+    logImpression: protectedProcedure
+      .input(z.object({ campaignId: z.string(), data: z.any() }))
+      .mutation(async ({ input }) => {
+        const { blockchainLogger } = await import("./services/blockchain/BlockchainLogger");
+        return blockchainLogger.logAdEvent(input.campaignId, "impression", input.data);
       }),
   }),
 
